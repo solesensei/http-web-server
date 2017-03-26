@@ -20,8 +20,17 @@ using namespace std;
 #define BACK_LOG 3
 #define MAXMSG 1024 //size of buffer 
 
+class Fake{
+	Fake(){
+		cout << "It's fake class\n";
+	}
+
+};
+
 int main()
 {
+    Fake f1;
+
     int opt = TRUE;
     int ms , addrlen , new_socket , client_socket[30] , max_clients = 30 , activity, i , valread , sd;
     int max_sd;
