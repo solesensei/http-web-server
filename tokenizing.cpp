@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <string.h>
 
 using namespace std;
 
@@ -57,7 +58,22 @@ enum type_of_lexem{
 	POLIZ_LABEL, //48
 	POLIZ_ADDRESS, //49
 	POLIZ_GO, //50
-	POLIZ_FGO //51
+	POLIZ_FGO, //51
+
+	/* additional lexmemes */
+
+	LEX_BEGIN, //52
+	LEX_BOOL, //53
+	LEX_END, //54
+	LEX_NOT, //55
+	LEX_READ, //56
+	LEX_THEN, //57
+	LEX_TRUE, //58
+	LEX_FALSE, //59
+	LEX_WRITE, //60
+	LEX_FIN, //61
+	LEX_INT, //62
+	LEX_PROGRAM //63
 };
 
 
@@ -104,7 +120,7 @@ class Identificator{
 	bool get_assign(){ return assign; }
 	void set_assign(){ assign = true; }
 	int get_balue(){ return value; }
-	int set_value(int k){ value = k; }
+	void set_value(int k){ value = k; }
 };
 
 class table_identificators{
@@ -127,19 +143,20 @@ int table_identificators::put(const char *buf){
 	for(int j=1; j<top; ++j){
 		if(!strcmp(buf,p[j].get_name()))
 			return j;
-	p[top].put_name(buf);
+	p[top].set_name(buf);
 	top++;
 	return top-1;
 	}
+	return 0;
 }
 
 class Scanner{
-	//enum state{ H , IDENT , NUMB , COM , ALE , DELIM , NEQ };
-
+	
+	enum state{ H , IDENT , NUMB , COM , ALE , DELIM , NEQ };
 	static char *TW[];
 	static type_of_lexem words[];
 	static char *TD[];
-	static type_lex dlms[];
+	static type_of_lexem dlms[];
 	state current_state;
 	FILE *fp;
 	char c;
@@ -235,7 +252,9 @@ char* Scanner::TD[]={
 	">=", //15
 };
 
-type_of_lex
+table_identificators TID(100);
+
+type_of_lexem
 	Scanner::words [] = {LEX_NULL, LEX_AND, LEX_BEGIN,
 		LEX_BOOL, LEX_DO, LEX_ELSE, LEX_END, LEX_IF,
 		LEX_FALSE, LEX_INT,LEX_NOT, LEX_OR,
@@ -243,21 +262,153 @@ type_of_lex
 		LEX_VAR, LEX_WHILE, LEX_WRITE, LEX_NULL};
 
 
-type_of_lex
+type_of_lexem
 	Scanner::dlms [] = {LEX_NULL,LEX_SEMICOLON,
 		LEX_COMMA, LEX_COLON,LEX_ASSIGN,LEX_LPAREN,
 		LEX_RPAREN, LEX_EQ,LEX_LSS, LEX_GTR, LEX_PLUS,
 		LEX_MINUS, LEX_TIMES, LEX_SLASH, LEX_LEQ,
 		LEX_NEQ, LEX_GEQ, LEX_NULL};
 
-
-Lexem Scanner::get_lex(){
 	/* HERE LEX ANALYSATOR BASED ON GRAPH */
+Lexem Scanner::get_lex(){
+
+	int d, j;
+	current_state = H;
+	do
+	{
+		switch ( current_state ){
+		case H:
+			if ( c ==' ' || c =='\n' || c=='\r' || c =='\t' ) //just skip all spaces
+					get_char ();
+/* ALPHA */	else if ( isalpha(c) )
+			{
+				clear (); //clear the buf
+				add (); // add char to buf
+				get_char ();
+				current_state = IDENT; //alpha | digit
+			}
+/* DIGIT */	else if ( isdigit(c))
+			{
+				d = c - '0';
+				get_char ();
+				current_state = NUMB;
+			}
+/* { */     else if ( c== '{' )
+			{
+				get_char ();
+				current_state = COM;
+			}
+/* : < > */	else if ( c== ':' || c== '<' || c== '>')
+			{
+				clear ();
+				add ();
+				get_char ();
+				current_state = ALE;
+			}
+/* FIN */	else if ( c == '@' )
+				return Lexem ( LEX_FIN );
+/* ! */		else if ( c == '!' )
+			{
+				clear ();
+				add ();
+				get_char ();
+				current_state = NEQ;
+			}
+			else
+				current_state = DELIM;
+			break;
+
+/* END OF THE FIRST GRAPGH STAGE */			
+
+		case IDENT:
+			if ( isalpha(c) || isdigit(c) ) // while digit | alpha
+			{
+				add ();
+				get_char ();
+			}
+			else if ( (j = look (buf, TW)) ) // buf == keyword 
+				return Lexem (words[j], j);
+			else
+			{
+				j = TID.put(buf); // if buf == name[j] return j, else push buf to names
+				return Lexem (LEX_ID, j);
+			}
+		break;
+		
+		case NUMB:
+			if ( isdigit(c) ) // while digit
+			{
+				d = d * 10 + (c - '0');
+				get_char();
+			}
+			else
+				return Lexem ( LEX_NUM, d );
+			break;
+
+		case COM:
+			if ( c == '}' ) // until '}'
+			{
+				get_char ();
+				current_state = H;
+			}
+			else if (c == '@' || c == '{' ) // ERROR
+				throw c;
+			else
+				get_char ();
+			break;
+
+		case ALE:
+			if ( c == '=' )
+			{
+				add ();
+				get_char ();
+				j = look ( buf, TD );
+				return Lexem ( dlms[j], j );
+			}
+			else
+			{
+				j = look (buf, TD); // buf == sign 
+				return Lexem ( dlms[j], j );
+			}
+			break;
+
+		case NEQ:
+			if ( c == '=' )
+			{
+				add ();
+				get_char ();
+				j = look ( buf, TD );
+				return Lexem ( LEX_NEQ, j );
+			}
+			else //ERROR: wrong sym after !
+			 throw '!';
+			break;
+
+		case DELIM:
+			clear ();
+			add ();
+			if ( (j = look(buf, TD)) )
+			{
+				get_char ();
+				return Lexem ( dlms[j], j );
+			}
+			else // ERROR
+				throw c;
+			break;
+		
+		} // end switch
+
+	} while ( true );
+
 }
 
-int main{
+int 
+main()
+{
 	/* set up tables of identificators */
-	table_identificators TID(100); //fills up during program's work
-	Scanner scanner;
+	table_identificators TID ( 100 ); //fills up during program's work
+	const char* program = "program_path";
+	Scanner scanner ( program );
+
 	return 0;
 }
