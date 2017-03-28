@@ -4,6 +4,7 @@
 
 using namespace std;
 
+#define PROG_PATH "here programm path" 
 
 /* ALL! javascript types of lexem (some may be useless) */
 enum type_of_lexem{
@@ -59,23 +60,9 @@ enum type_of_lexem{
 	POLIZ_ADDRESS, //49
 	POLIZ_GO, //50
 	POLIZ_FGO, //51
+	LEX_FIN //52
 
-	/* additional lexmemes */
-
-	LEX_BEGIN, //52
-	LEX_BOOL, //53
-	LEX_END, //54
-	LEX_NOT, //55
-	LEX_READ, //56
-	LEX_THEN, //57
-	LEX_TRUE, //58
-	LEX_FALSE, //59
-	LEX_WRITE, //60
-	LEX_FIN, //61
-	LEX_INT, //62
-	LEX_PROGRAM //63
 };
-
 
 /* Lexem is (type of a lexem, value of lexem)*/
 class Lexem{
@@ -230,6 +217,7 @@ char* Scanner::TW[]={
 	"void", //27
 	"while", //28
 	"with", //29
+	NULL
 };
 
 /* TABLE OF SPECIAL SIGNS */
@@ -250,24 +238,29 @@ char* Scanner::TD[]={
 	"<=", //13
 	"!=", //14
 	">=", //15
+    "==", //16
+	"@", //17
+	NULL
 };
 
 table_identificators TID(100);
 
 type_of_lexem
-	Scanner::words [] = {LEX_NULL, LEX_AND, LEX_BEGIN,
-		LEX_BOOL, LEX_DO, LEX_ELSE, LEX_END, LEX_IF,
-		LEX_FALSE, LEX_INT,LEX_NOT, LEX_OR,
-		LEX_PROGRAM, LEX_READ, LEX_THEN, LEX_TRUE,
-		LEX_VAR, LEX_WHILE, LEX_WRITE, LEX_NULL};
+	Scanner::words [] = {LEX_NULL, LEX_AND, LEX_BREAK,
+		LEX_CASE, LEX_CATCH, LEX_CONST, LEX_CONTINUE, 
+		LEX_DEBUGGER, LEX_DEFAULT, LEX_DELETE, LEX_DO, LEX_ELSE,
+		LEX_FINALLY, LEX_FOR, LEX_FUNCTION, LEX_IF, LEX_IN, 
+		LEX_INSTANCEOF, LEX_LET, LEX_NEW, LEX_OR, LEX_RETURN,
+		LEX_SWITCH, LEX_THROW, LEX_TRY, LEX_TYPEOF, LEX_VAR, 
+		LEX_VOID, LEX_WHILE, LEX_WITH, LEX_NULL};
 
 
 type_of_lexem
-	Scanner::dlms [] = {LEX_NULL,LEX_SEMICOLON,
-		LEX_COMMA, LEX_COLON,LEX_ASSIGN,LEX_LPAREN,
-		LEX_RPAREN, LEX_EQ,LEX_LSS, LEX_GTR, LEX_PLUS,
+	Scanner::dlms [] = {LEX_NULL, LEX_SEMICOLON, 
+		LEX_COMMA, LEX_COLON, LEX_ASSIGN, LEX_LPAREN,
+		LEX_RPAREN, LEX_EQ, LEX_LSS, LEX_GTR, LEX_PLUS,
 		LEX_MINUS, LEX_TIMES, LEX_SLASH, LEX_LEQ,
-		LEX_NEQ, LEX_GEQ, LEX_NULL};
+		LEX_NEQ, LEX_GEQ, LEX_FIN, LEX_NULL};
 
 	/* HERE LEX ANALYSATOR BASED ON GRAPH */
 Lexem Scanner::get_lex(){
@@ -298,7 +291,7 @@ Lexem Scanner::get_lex(){
 				get_char ();
 				current_state = COM;
 			}
-/* : < > */	else if ( c== ':' || c== '<' || c== '>')
+/* = < > */	else if ( c== '=' || c== '<' || c== '>')
 			{
 				clear ();
 				add ();
@@ -380,7 +373,7 @@ Lexem Scanner::get_lex(){
 				j = look ( buf, TD );
 				return Lexem ( LEX_NEQ, j );
 			}
-			else //ERROR: wrong sym after !
+			else //ERROR: not !=
 			 throw '!';
 			break;
 
@@ -407,7 +400,7 @@ main()
 {
 	/* set up tables of identificators */
 	table_identificators TID ( 100 ); //fills up during program's work
-	const char* program = "program_path";
+	const char* program = PROG_PATH;
 	Scanner scanner ( program );
 
 	return 0;
