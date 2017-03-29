@@ -1,10 +1,12 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
+#include <exception>
+#include <stdlib.h>
 
 using namespace std;
 
-#define PROG_PATH "here programm path" 
+#define PROG_PATH "./input_file" 
 
 /* ALL! javascript types of lexem (some may be useless) */
 enum type_of_lexem{
@@ -20,8 +22,8 @@ enum type_of_lexem{
 	LEX_DELETE, //9
 	LEX_DO, //10
 	LEX_ELSE, //11
-	LEX_FINALLY, //12
 	LEX_FOR, //13
+	LEX_FINALLY, //12
 	LEX_FUNCTION, //14
 	LEX_IF, //15
 	LEX_IN, //16
@@ -44,8 +46,8 @@ enum type_of_lexem{
 	LEX_ASSIGN, //33
 	LEX_LPAREN, //34
 	LEX_RPAREN, //35
-	LEX_EQ, //36
 	LEX_LSS, //37
+	LEX_EQ, //36
 	LEX_GTR, //38
 	LEX_PLUS, //39
 	LEX_MINUS, //40
@@ -60,7 +62,11 @@ enum type_of_lexem{
 	POLIZ_ADDRESS, //49
 	POLIZ_GO, //50
 	POLIZ_FGO, //51
-	LEX_FIN //52
+	LEX_FIN, //52
+	LEX_LBRACE, //53
+	LEX_RBRACE, //54
+	LEX_QUOT, //55
+	LEX_APOS //56
 
 };
 
@@ -78,7 +84,7 @@ class Lexem{
  	int get_value(){ return value_lex; }
 
  	friend ostream& operator<< (ostream &s, Lexem l){
- 		s << '(' << l.type_lex << ' ' << l.value_lex << ");";
+ 		s << '(' << l.type_lex << " - " << l.value_lex << "); ";
  		return s;
  	}
 };
@@ -139,10 +145,10 @@ int table_identificators::put(const char *buf){
 
 class Scanner{
 	
-	enum state{ H , IDENT , NUMB , COM , ALE , DELIM , NEQ };
-	static char *TW[];
+	enum state{ H , IDENT , NUMB , COM1 , COM2 , ALE , DELIM , NEQ };
+	static const char *TW[];
 	static type_of_lexem words[];
-	static char *TD[];
+	static const char *TD[];
 	static type_of_lexem dlms[];
 	state current_state;
 	FILE *fp;
@@ -160,7 +166,7 @@ class Scanner{
 		buf[buf_top++]=c;
 	}
 
-	int look(const char *buf, char **list){
+	int look(const char *buf, const char **list){
 		int i = 0;
 		while(list[i]){
 			if(!strcmp(buf,list[i]))
@@ -175,7 +181,8 @@ class Scanner{
 	}
  public:
  	Scanner (const char *program){
- 		fp = fopen(program,"r");
+		if( !(fp = fopen(program,"r")) )
+			 throw invalid_argument("no such file");
  		current_state = H;
  		clear();
  		get_char();
@@ -186,7 +193,7 @@ class Scanner{
 /* SETTING UP STATIC TABLES */
 
 /* TABLE OF LANGUAGE KEY WORDS */
-char* Scanner::TW[]={
+const char* Scanner::TW[]={
 	"", //0
 	"and" //1
 	"break", //2
@@ -221,25 +228,30 @@ char* Scanner::TW[]={
 };
 
 /* TABLE OF SPECIAL SIGNS */
-char* Scanner::TD[]={
+const char* Scanner::TD[]={
 	"", //0
 	";", //1
 	",", //2
-	":", //3
-	"(", //4
-	")", //5
-	"=", //6
-	"<", //7
-	">", //8
-	"+", //9
-	"-", //10
-	"*", //11
-	"/", //12
-	"<=", //13
-	"!=", //14
-	">=", //15
-    "==", //16
-	"@", //17
+	"{", //3
+	"}", //4
+	":", //5
+	"(", //6
+	")", //7
+	"=", //8
+	"<", //9
+	">", //10
+	"+", //11
+	"-", //12
+	"*", //13
+	"/", //14
+	"<=", //15
+	"!=", //16
+	">=", //17
+    "==", //18
+	"\"", //19
+	"'", //20
+	"@", //21
+
 	NULL
 };
 
@@ -256,11 +268,11 @@ type_of_lexem
 
 
 type_of_lexem
-	Scanner::dlms [] = {LEX_NULL, LEX_SEMICOLON, 
-		LEX_COMMA, LEX_COLON, LEX_ASSIGN, LEX_LPAREN,
-		LEX_RPAREN, LEX_EQ, LEX_LSS, LEX_GTR, LEX_PLUS,
-		LEX_MINUS, LEX_TIMES, LEX_SLASH, LEX_LEQ,
-		LEX_NEQ, LEX_GEQ, LEX_FIN, LEX_NULL};
+	Scanner::dlms [] = {LEX_NULL, LEX_SEMICOLON, LEX_COMMA, 
+		LEX_LBRACE, LEX_RBRACE, LEX_COLON, LEX_ASSIGN, 
+		LEX_LPAREN, LEX_RPAREN, LEX_EQ, LEX_LSS, LEX_GTR, 
+		LEX_PLUS, LEX_MINUS, LEX_TIMES, LEX_SLASH, LEX_LEQ,
+		LEX_NEQ, LEX_GEQ, LEX_QUOT, LEX_APOS, LEX_FIN, LEX_NULL};
 
 	/* HERE LEX ANALYSATOR BASED ON GRAPH */
 Lexem Scanner::get_lex(){
@@ -285,11 +297,31 @@ Lexem Scanner::get_lex(){
 				d = c - '0';
 				get_char ();
 				current_state = NUMB;
+			} 
+
+
+			/* HERE NEED TO INSERT string processing "..." and '.'
+			else if (c== '\"' || c== '\'') 
+			{
+				get_char();	
+				current_state = STR; //need to add new state 
 			}
-/* { */     else if ( c== '{' )
+			*/
+
+
+/* COM1 */  else if ( c== '\\')
 			{
 				get_char ();
-				current_state = COM;
+				if (c== '\\')
+					current_state = COM1;
+				else throw c;
+			}
+/* COM2 */ 	else if ( c== '/')
+			{
+				get_char();
+				if( c== '*')
+					current_state = COM2;
+				else throw c;
 			}
 /* = < > */	else if ( c== '=' || c== '<' || c== '>')
 			{
@@ -338,16 +370,30 @@ Lexem Scanner::get_lex(){
 				return Lexem ( LEX_NUM, d );
 			break;
 
-		case COM:
-			if ( c == '}' ) // until '}'
+		case COM1: // ...
+			if ( c == '\n') // until end of line 
 			{
 				get_char ();
 				current_state = H;
 			}
-			else if (c == '@' || c == '{' ) // ERROR
+			else if (c == '@') // ERROR
 				throw c;
 			else
 				get_char ();
+			break;
+		case COM2: /* ... */
+			if (c == '*')
+			{
+				get_char ();
+				if (c == '/')
+				{
+					get_char();
+					current_state = H;
+				}
+			}
+			else if (c == '@') //ERROR
+				throw c;
+			else get_char();
 			break;
 
 		case ALE:
@@ -389,7 +435,7 @@ Lexem Scanner::get_lex(){
 				throw c;
 			break;
 		
-		} // end switch
+		} // end of switch
 
 	} while ( true );
 
@@ -400,8 +446,27 @@ main()
 {
 	/* set up tables of identificators */
 	table_identificators TID ( 100 ); //fills up during program's work
+ try
+ {
 	const char* program = PROG_PATH;
 	Scanner scanner ( program );
-
+	ofstream out ("output_file");
+	Lexem lex;
+	int k = 0;
+	while (lex.get_type() != LEX_FIN)
+	{
+		if ( ++k % 10 == 0) out << endl;
+		lex = scanner.get_lex();
+		out << lex;
+	}	
+ }
+catch(invalid_argument& err)
+	{
+		cerr << "Exception catched : " << err.what() << endl;
+	}
+catch(char& c)
+	{
+		cerr << "Exception catched : lex error : " << c << endl;
+	}
 	return 0;
 }
