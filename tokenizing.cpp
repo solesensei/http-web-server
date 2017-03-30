@@ -43,31 +43,30 @@ enum type_of_lexem{
 	LEX_SEMICOLON, //30
 	LEX_COMMA, //31
 	LEX_COLON, //32
-	LEX_ASSIGN, //33
-	LEX_LPAREN, //34
-	LEX_RPAREN, //35
-	LEX_LSS, //37
+	//LEX_ASSIGN,
+	LEX_LPAREN, //33
+	LEX_RPAREN, //34
+	LEX_LSS, //35
 	LEX_EQ, //36
-	LEX_GTR, //38
-	LEX_PLUS, //39
-	LEX_MINUS, //40
-	LEX_TIMES, //41
-	LEX_SLASH, //42
-	LEX_LEQ, //43
-	LEX_NEQ, //44
-	LEX_GEQ, //45
-	LEX_NUM, //46
-	LEX_ID, //47
-	POLIZ_LABEL, //48
-	POLIZ_ADDRESS, //49
-	POLIZ_GO, //50
-	POLIZ_FGO, //51
-	LEX_FIN, //52
-	LEX_LBRACE, //53
-	LEX_RBRACE, //54
-	LEX_QUOT, //55
-	LEX_APOS //56
-
+	LEX_GTR, //37
+	LEX_PLUS, //38
+	LEX_MINUS, //39
+	LEX_TIMES, //40
+	LEX_SLASH, //41
+	LEX_LEQ, //42
+	LEX_NEQ, //43
+	LEX_GEQ, //44
+	LEX_NUM, //45
+	LEX_ID, //46
+	POLIZ_LABEL, //47
+	POLIZ_ADDRESS, //48
+	POLIZ_GO, //49
+	POLIZ_FGO, //50
+	LEX_FIN, //51
+	LEX_LBRACE, //52
+	LEX_RBRACE, //53
+	LEX_STRING, //54
+	LEX_CHAR //55
 };
 
 /* Lexem is (type of a lexem, value of lexem)*/
@@ -123,6 +122,7 @@ class table_identificators{
  public:
  	table_identificators(int max_size){
  		p = new Identificator[size=max_size];
+ 		//p[0]= Identificator();
  		top = 1;
  	}
  	~table_identificators(){
@@ -133,19 +133,18 @@ class table_identificators{
 };
 
 int table_identificators::put(const char *buf){
-	for(int j=1; j<top; ++j){
+	for(int j=1; j<top; j++)
 		if(!strcmp(buf,p[j].get_name()))
 			return j;
 	p[top].set_name(buf);
 	top++;
 	return top-1;
-	}
-	return 0;
 }
 
 class Scanner{
 	
-	enum state{ H , IDENT , NUMB , COM1 , COM2 , ALE , DELIM , NEQ };
+
+	enum state{ H , IDENT , NUMB , COM1 , COM2 , ALE , DELIM , NEQ , STRING,CHAR,ORD_CHAR,ESCAPE_CHAR,ERROR};
 	static const char *TW[];
 	static type_of_lexem words[];
 	static const char *TD[];
@@ -195,12 +194,12 @@ class Scanner{
 /* TABLE OF LANGUAGE KEY WORDS */
 const char* Scanner::TW[]={
 	"", //0
-	"and" //1
+	"and", //1
 	"break", //2
 	"case", //3
 	"catch", //4
 	"const", //5
-	"continue" //6
+	"continue", //6
 	"debugger", //7
 	"default", //8
 	"delete", //9
@@ -248,8 +247,9 @@ const char* Scanner::TD[]={
 	"!=", //16
 	">=", //17
     "==", //18
-	"\"", //19
-	"'", //20
+	//"\"", //19
+	//"'", //20
+
 	"@", //21
 
 	NULL
@@ -268,11 +268,13 @@ type_of_lexem
 
 
 type_of_lexem
-	Scanner::dlms [] = {LEX_NULL, LEX_SEMICOLON, LEX_COMMA, 
-		LEX_LBRACE, LEX_RBRACE, LEX_COLON, LEX_ASSIGN, 
+
+	Scanner::dlms [] = {LEX_NULL, LEX_SEMICOLON, LEX_COMMA, //LEX_ASSIGN, 
+		LEX_LBRACE, LEX_RBRACE, LEX_COLON, 
 		LEX_LPAREN, LEX_RPAREN, LEX_EQ, LEX_LSS, LEX_GTR, 
 		LEX_PLUS, LEX_MINUS, LEX_TIMES, LEX_SLASH, LEX_LEQ,
-		LEX_NEQ, LEX_GEQ, LEX_QUOT, LEX_APOS, LEX_FIN, LEX_NULL};
+		LEX_NEQ, LEX_GEQ, LEX_STRING, LEX_CHAR, LEX_FIN, LEX_NULL};
+
 
 	/* HERE LEX ANALYSATOR BASED ON GRAPH */
 Lexem Scanner::get_lex(){
@@ -300,14 +302,19 @@ Lexem Scanner::get_lex(){
 			} 
 
 
-			/* HERE NEED TO INSERT string processing "..." and '.'
-			else if (c== '\"' || c== '\'') 
-			{
-				get_char();	
-				current_state = STR; //need to add new state 
-			}
-			*/
 
+			/* HERE NEED TO INSERT string processing "..." and '.'*/
+			else if (c== '\"') //|| c== '\'') 
+			{
+				/* After spaces only works*/
+
+				get_char();	
+				current_state = STRING; //need to add new state 
+			}
+			else if(c== '\''){
+				get_char();
+				current_state = CHAR;
+			}
 
 /* COM1 */  else if ( c== '\\')
 			{
@@ -346,6 +353,11 @@ Lexem Scanner::get_lex(){
 /* END OF THE FIRST GRAPGH STAGE */			
 
 		case IDENT:
+			if(c == '\"' || c=='\''){
+				clear();
+				current_state = ERROR;
+			}
+
 			if ( isalpha(c) || isdigit(c) ) // while digit | alpha
 			{
 				add ();
@@ -377,7 +389,7 @@ Lexem Scanner::get_lex(){
 				current_state = H;
 			}
 			else if (c == '@') // ERROR
-				throw c;
+				current_state=ERROR;
 			else
 				get_char ();
 			break;
@@ -392,7 +404,9 @@ Lexem Scanner::get_lex(){
 				}
 			}
 			else if (c == '@') //ERROR
-				throw c;
+
+				current_state = ERROR;
+
 			else get_char();
 			break;
 
@@ -420,7 +434,9 @@ Lexem Scanner::get_lex(){
 				return Lexem ( LEX_NEQ, j );
 			}
 			else //ERROR: not !=
-			 throw '!';
+
+				current_state =ERROR;
+
 			break;
 
 		case DELIM:
@@ -432,17 +448,94 @@ Lexem Scanner::get_lex(){
 				return Lexem ( dlms[j], j );
 			}
 			else // ERROR
-				throw c;
+
+				current_state = ERROR;
 			break;
-		
-		} // end of switch
+
+		case CHAR:{
+			add();
+			if(c=='\''){
+				get_char();
+				return Lexem(LEX_CHAR,'\0');
+			}
+			else if(c=='\\'){
+				 //escape-char
+				 get_char();
+				 current_state = ESCAPE_CHAR;
+			}
+			else{
+				get_char();
+				current_state =ORD_CHAR;
+			}
+			break;
+		}
+
+		case ORD_CHAR:{
+			if(c=='\''){
+				get_char();
+				return Lexem(LEX_CHAR,buf[1]);
+			}
+			else{
+				clear();
+				current_state = ERROR;
+			}
+		}
+		/* HERE ERROR SOMEWHERE*/
+		case ESCAPE_CHAR:{
+			if(c=='n'){
+				get_char();
+				if(c == '\''){
+					return Lexem(LEX_CHAR,'\n');
+				}
+			}
+			else if(c=='\\'){
+				get_char();
+				if(c == '\'')
+					return Lexem(LEX_CHAR,'\\');
+			}
+			else if(c=='t'){
+				get_char();
+				if(c == '\'')
+					return Lexem(LEX_CHAR,'\t');
+			}
+			else{
+				clear();
+				current_state = ERROR;
+			}
+			break;
+		}
+		 
+/*STRING*/
+		case STRING:{
+			add();
+			if(c=='\"'){
+				get_char();
+				return Lexem(LEX_STRING,strlen(buf)-2);
+			}
+			else if(c=='@'){
+				clear();
+				current_state = ERROR;
+			}
+			else{
+				get_char();
+			}
+			break;
+		}
+
+
+		case ERROR:{
+			throw c;
+			break;
+		}
+	} // end of switch
+
 
 	} while ( true );
 
 }
 
-int 
-main()
+int main()
+
 {
 	/* set up tables of identificators */
 	table_identificators TID ( 100 ); //fills up during program's work

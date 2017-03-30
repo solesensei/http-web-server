@@ -1,6 +1,7 @@
 function Hello ()
     {
-        alert("Hello World") \\ !
+        alert("Hello") \\ !
+        hue:moe('n');
     }
 @ <- end of file
 any text here
