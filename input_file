@@ -1,0 +1,7 @@
+function Hello ()
+    {
+        alert("Hello") \\ !
+        hue:moe('n');
+    }
+@ <- end of file
+any text here
