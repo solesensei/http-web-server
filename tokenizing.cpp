@@ -50,25 +50,27 @@ enum type_of_lexem{
 	LEX_RPAREN, //34
 	LEX_LSS, //35
 	LEX_EQ, //36
-	LEX_GTR, //37
-	LEX_PLUS, //38
-	LEX_MINUS, //39
-	LEX_TIMES, //40
-	LEX_SLASH, //41
-	LEX_LEQ, //42
-	LEX_NEQ, //43
-	LEX_GEQ, //44
-	LEX_NUM, //45
-	LEX_ID, //46
-	POLIZ_LABEL, //47
-	POLIZ_ADDRESS, //48
-	POLIZ_GO, //49
-	POLIZ_FGO, //50
-	LEX_FIN, //51
-	LEX_LBRACE, //52
-	LEX_RBRACE, //53
-	LEX_STRING, //54
-	LEX_CHAR //55
+	LEX_DEQ,//37
+	LEX_TEQ, //38
+	LEX_GTR, //39
+	LEX_PLUS, //40
+	LEX_MINUS, //41
+	LEX_TIMES, //42
+	LEX_SLASH, //43
+	LEX_LEQ, //44
+	LEX_NEQ, //45
+	LEX_GEQ, //46
+	LEX_NUM, //47
+	LEX_ID, //48
+	POLIZ_LABEL, //49
+	POLIZ_ADDRESS, //50
+	POLIZ_GO, //51
+	POLIZ_FGO, //52
+	LEX_FIN, //53
+	LEX_LBRACE, //54
+	LEX_RBRACE, //55
+	LEX_STRING, //56
+	LEX_CHAR //57
 };
 
 /* Lexem is (type of a lexem, value of lexem)*/
@@ -145,7 +147,7 @@ int table_identificators::put(const char *buf){
 
 class Scanner{
 	
-	enum state{ H , IDENT , NUMB , COM1 , COM2 , ALE , DELIM , NEQ , STRING,ERROR};
+	enum state{ H , IDENT , NUMB , COM1 , COM2 , ALE , COMP,DELIM , NEQ , STRING,ERROR};
 	static const char *TW[];
 	static type_of_lexem words[];
 	static const char *TD[];
@@ -249,10 +251,11 @@ const char* Scanner::TD[]={
 	"!=", //16
 	">=", //17
     "==", //18
-	//"\"", //19
-	//"'", //20
+    "===",//19
+	//"\"", //20
+	//"'", //21
 
-	"@", //21
+	"@", //22
 
 	NULL
 };
@@ -274,9 +277,9 @@ type_of_lexem
 
 	Scanner::dlms [] = {LEX_NULL, LEX_SEMICOLON, LEX_COMMA, //LEX_ASSIGN, 
 		LEX_LBRACE, LEX_RBRACE, LEX_COLON, 
-		LEX_LPAREN, LEX_RPAREN, LEX_EQ, LEX_LSS, LEX_GTR, 
+		LEX_LPAREN, LEX_RPAREN, LEX_EQ,LEX_LSS, LEX_GTR, 
 		LEX_PLUS, LEX_MINUS, LEX_TIMES, LEX_SLASH, LEX_LEQ,
-		LEX_NEQ, LEX_GEQ, LEX_STRING, LEX_CHAR, LEX_FIN, LEX_NULL};
+		LEX_NEQ, LEX_GEQ,LEX_DEQ,LEX_TEQ,LEX_STRING, LEX_CHAR, LEX_FIN, LEX_NULL};
 
 
 	/* HERE LEX ANALYSATOR BASED ON GRAPH */
@@ -333,12 +336,18 @@ Lexem Scanner::get_lex(){
 					current_state = COM2;
 				else throw c;
 			}
-/* = < > */	else if ( c== '=' || c== '<' || c== '>')
+/* = < > */	else if ( c== '=')
 			{
 				clear ();
 				add ();
 				get_char ();
 				current_state = ALE;
+			}
+			else if(c== '<' || c== '>'){
+				clear ();
+				add ();
+				get_char ();
+				current_state = COMP;
 			}
 /* FIN */	else if ( c == '@' )
 				return Lexem ( LEX_FIN );
@@ -418,8 +427,16 @@ Lexem Scanner::get_lex(){
 			{
 				add ();
 				get_char ();
-				j = look ( buf, TD );
-				return Lexem ( dlms[j], j );
+				if(c == '='){
+					add();
+					get_char();
+					j = look ( buf, TD );
+					return Lexem ( dlms[j], j );
+				}
+				else{
+					j = look ( buf, TD );
+					return Lexem ( dlms[j], j );
+				}
 			}
 			else
 			{
@@ -427,6 +444,17 @@ Lexem Scanner::get_lex(){
 				return Lexem ( dlms[j], j );
 			}
 			break;
+		case COMP:{
+			if ( c == '=' )
+			{
+				add ();
+				get_char ();
+				j = look (buf, TD); // buf == sign 
+				return Lexem ( dlms[j], j );
+			}
+			break;
+
+		}
 
 		case NEQ:
 			if ( c == '=' )
