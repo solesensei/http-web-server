@@ -24,8 +24,8 @@ enum type_of_lexem{
 	LEX_DELETE, //9
 	LEX_DO, //10
 	LEX_ELSE, //11
-	LEX_FINALLY, //12
 	LEX_FOR, //13
+	LEX_FINALLY, //12
 	LEX_FUNCTION, //14
 	LEX_IF, //15
 	LEX_IN, //16
@@ -69,7 +69,6 @@ enum type_of_lexem{
 	LEX_RBRACE, //53
 	LEX_STRING, //54
 	LEX_CHAR //55
-
 };
 
 /* Lexem is (type of a lexem, value of lexem)*/
@@ -146,7 +145,7 @@ int table_identificators::put(const char *buf){
 
 class Scanner{
 	
-	enum state{ H , IDENT , NUMB , COM1 , COM2 , ALE , DELIM , NEQ , STRING/*,CHAR,ORD_CHAR,ESCAPE_CHAR,*/,ERROR};
+	enum state{ H , IDENT , NUMB , COM1 , COM2 , ALE , DELIM , NEQ , STRING,ERROR};
 	static const char *TW[];
 	static type_of_lexem words[];
 	static const char *TD[];
@@ -252,6 +251,7 @@ const char* Scanner::TD[]={
     "==", //18
 	//"\"", //19
 	//"'", //20
+
 	"@", //21
 
 	NULL
@@ -271,11 +271,13 @@ type_of_lexem
 
 
 type_of_lexem
+
 	Scanner::dlms [] = {LEX_NULL, LEX_SEMICOLON, LEX_COMMA, //LEX_ASSIGN, 
 		LEX_LBRACE, LEX_RBRACE, LEX_COLON, 
 		LEX_LPAREN, LEX_RPAREN, LEX_EQ, LEX_LSS, LEX_GTR, 
 		LEX_PLUS, LEX_MINUS, LEX_TIMES, LEX_SLASH, LEX_LEQ,
 		LEX_NEQ, LEX_GEQ, LEX_STRING, LEX_CHAR, LEX_FIN, LEX_NULL};
+
 
 	/* HERE LEX ANALYSATOR BASED ON GRAPH */
 Lexem Scanner::get_lex(){
@@ -301,6 +303,7 @@ Lexem Scanner::get_lex(){
 				get_char ();
 				current_state = NUMB;
 			} 
+
 
 
 			/* HERE NEED TO INSERT string processing "..." and '.'*/
@@ -357,6 +360,7 @@ Lexem Scanner::get_lex(){
 				clear();
 				current_state = ERROR;
 			}
+
 			if ( isalpha(c) || isdigit(c) ) // while digit | alpha
 			{
 				add ();
@@ -403,7 +407,9 @@ Lexem Scanner::get_lex(){
 				}
 			}
 			else if (c == '@') //ERROR
+
 				current_state = ERROR;
+
 			else get_char();
 			break;
 
@@ -431,7 +437,9 @@ Lexem Scanner::get_lex(){
 				return Lexem ( LEX_NEQ, j );
 			}
 			else //ERROR: not !=
+
 				current_state =ERROR;
+
 			break;
 
 		case DELIM:
@@ -443,6 +451,7 @@ Lexem Scanner::get_lex(){
 				return Lexem ( dlms[j], j );
 			}
 			else // ERROR
+
 				current_state = ERROR;
 			break;
 		 
@@ -480,6 +489,7 @@ Lexem Scanner::get_lex(){
 }
 
 int main()
+
 {
 	/* set up tables of identificators */
 	ofstream out ("output_file");
