@@ -1,7 +1,8 @@
-function Hello ()
-    {
-        alert("Hello") \\ !
-        hue:moe('n');
-    }
+function Hello (){
+        print("Hello"); \\ !
+        \\ comment
+        print(" World");
+        print("!\n");
+}
 @ <- end of file
 any text here
