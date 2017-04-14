@@ -3,6 +3,8 @@
 #include <string.h>
 #include <exception>
 #include <stdlib.h>
+#include <string>
+#include <vector>
 
 using namespace std;
 
@@ -143,12 +145,12 @@ int table_identificators::put(const char *buf){
 
 class Scanner{
 	
-
-	enum state{ H , IDENT , NUMB , COM1 , COM2 , ALE , DELIM , NEQ , STRING,CHAR,ORD_CHAR,ESCAPE_CHAR,ERROR};
+	enum state{ H , IDENT , NUMB , COM1 , COM2 , ALE , DELIM , NEQ , STRING,ERROR};
 	static const char *TW[];
 	static type_of_lexem words[];
 	static const char *TD[];
 	static type_of_lexem dlms[];
+	//static char* TS[];
 	state current_state;
 	FILE *fp;
 	char c;
@@ -256,6 +258,7 @@ const char* Scanner::TD[]={
 };
 
 table_identificators TID(100);
+vector<string> TS;
 
 type_of_lexem
 	Scanner::words [] = {LEX_NULL, LEX_AND, LEX_BREAK,
@@ -311,10 +314,10 @@ Lexem Scanner::get_lex(){
 				get_char();	
 				current_state = STRING; //need to add new state 
 			}
-			else if(c== '\''){
+			/*else if(c== '\''){
 				get_char();
 				current_state = CHAR;
-			}
+			}*/
 
 /* COM1 */  else if ( c== '\\')
 			{
@@ -451,72 +454,23 @@ Lexem Scanner::get_lex(){
 
 				current_state = ERROR;
 			break;
-
-		case CHAR:{
-			add();
-			if(c=='\''){
-				get_char();
-				return Lexem(LEX_CHAR,'\0');
-			}
-			else if(c=='\\'){
-				 //escape-char
-				 get_char();
-				 current_state = ESCAPE_CHAR;
-			}
-			else{
-				get_char();
-				current_state =ORD_CHAR;
-			}
-			break;
-		}
-
-		case ORD_CHAR:{
-			if(c=='\''){
-				get_char();
-				return Lexem(LEX_CHAR,buf[1]);
-			}
-			else{
-				clear();
-				current_state = ERROR;
-			}
-		}
-		/* HERE ERROR SOMEWHERE*/
-		case ESCAPE_CHAR:{
-			if(c=='n'){
-				get_char();
-				if(c == '\''){
-					return Lexem(LEX_CHAR,'\n');
-				}
-			}
-			else if(c=='\\'){
-				get_char();
-				if(c == '\'')
-					return Lexem(LEX_CHAR,'\\');
-			}
-			else if(c=='t'){
-				get_char();
-				if(c == '\'')
-					return Lexem(LEX_CHAR,'\t');
-			}
-			else{
-				clear();
-				current_state = ERROR;
-			}
-			break;
-		}
 		 
 /*STRING*/
 		case STRING:{
-			add();
+			
 			if(c=='\"'){
+				string str(buf+1);
+				add();
 				get_char();
-				return Lexem(LEX_STRING,strlen(buf)-2);
+				TS.push_back(str);
+				return Lexem(LEX_STRING,TS.size());
 			}
 			else if(c=='@'){
 				clear();
 				current_state = ERROR;
 			}
 			else{
+				add();
 				get_char();
 			}
 			break;
@@ -538,12 +492,11 @@ int main()
 
 {
 	/* set up tables of identificators */
-	table_identificators TID ( 100 ); //fills up during program's work
+	ofstream out ("output_file");
  try
  {
 	const char* program = PROG_PATH;
 	Scanner scanner ( program );
-	ofstream out ("output_file");
 	Lexem lex;
 	int k = 0;
 	while (lex.get_type() != LEX_FIN)
@@ -553,6 +506,7 @@ int main()
 		out << lex;
 	}	
  }
+
 catch(invalid_argument& err)
 	{
 		cerr << "Exception catched : " << err.what() << endl;
@@ -561,5 +515,13 @@ catch(char& c)
 	{
 		cerr << "Exception catched : lex error : " << c << endl;
 	}
+	out << endl << endl;
+	int i=1;
+	vector <string>::const_iterator p = TS.begin();
+ 	while(p!=TS.end()){
+ 		out << i <<" "<< *p << endl;
+ 		p++;
+ 		i++;
+ 	}
 	return 0;
 }
