@@ -1,7 +1,9 @@
 # http-web-server
 #### by sole and lazy
+
 ---
-## Interpreter
+
+## JavaScript Interpreter
 ### First stage :: tokenizing
 token analyzer
 
@@ -13,8 +15,9 @@ syntax analyzer
 
      syntax.cpp
      Syntaxlib.h
-     
+
 ---
+
 ## HTTP web server
 
      web_server.cpp
