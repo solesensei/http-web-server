@@ -456,6 +456,11 @@ Lexem Scanner::get_lex(){
 				j = look (buf, TD); // buf == sign 
 				return Lexem ( dlms[j], j );
 			}
+            else 
+            {
+				j = look (buf, TD); // buf == sign 
+				return Lexem ( dlms[j], j );
+            }
 			break;
 
 		}
