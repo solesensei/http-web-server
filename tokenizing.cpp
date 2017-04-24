@@ -24,8 +24,8 @@ enum type_of_lexem{
 	LEX_DELETE, //9
 	LEX_DO, //10
 	LEX_ELSE, //11
-	LEX_FOR, //13
 	LEX_FINALLY, //12
+	LEX_FOR, //13
 	LEX_FUNCTION, //14
 	LEX_IF, //15
 	LEX_IN, //16
@@ -70,7 +70,9 @@ enum type_of_lexem{
 	LEX_LBRACE, //54
 	LEX_RBRACE, //55
 	LEX_STRING, //56
-	LEX_CHAR //57
+	LEX_CHAR, //57
+    LEX_TRUE, //58
+    LEX_FALSE //59
 };
 
 /* Lexem is (type of a lexem, value of lexem)*/
@@ -147,7 +149,7 @@ int table_identificators::put(const char *buf){
 
 class Scanner{
 	
-	enum state{ H , IDENT , NUMB , COM1 , COM2 , ALE , COMP,DELIM , NEQ , STRING,ERROR};
+	enum state { H , IDENT , NUMB , COM1 , COM2 , ALE , COMP , DELIM , NEQ , STRING , ERROR};
 	static const char *TW[];
 	static type_of_lexem words[];
 	static const char *TD[];
@@ -227,7 +229,9 @@ const char* Scanner::TW[]={
 	"void", //27
 	"while", //28
 	"with", //29
-	NULL
+    "true", //30
+    "false",//31
+	 NULL
 };
 
 /* TABLE OF SPECIAL SIGNS */
@@ -257,7 +261,7 @@ const char* Scanner::TD[]={
 
 	"@", //22
 
-	NULL
+	 NULL
 };
 
 table_identificators TID(100);
@@ -270,7 +274,7 @@ type_of_lexem
 		LEX_FINALLY, LEX_FOR, LEX_FUNCTION, LEX_IF, LEX_IN, 
 		LEX_INSTANCEOF, LEX_LET, LEX_NEW, LEX_OR, LEX_RETURN,
 		LEX_SWITCH, LEX_THROW, LEX_TRY, LEX_TYPEOF, LEX_VAR, 
-		LEX_VOID, LEX_WHILE, LEX_WITH, LEX_NULL};
+		LEX_VOID, LEX_WHILE, LEX_WITH, LEX_TRUE, LEX_FALSE, LEX_NULL};
 
 
 type_of_lexem
@@ -279,7 +283,7 @@ type_of_lexem
 		LEX_LBRACE, LEX_RBRACE, LEX_COLON, 
 		LEX_LPAREN, LEX_RPAREN, LEX_EQ,LEX_LSS, LEX_GTR, 
 		LEX_PLUS, LEX_MINUS, LEX_TIMES, LEX_SLASH, LEX_LEQ,
-		LEX_NEQ, LEX_GEQ,LEX_DEQ,LEX_TEQ,LEX_STRING, LEX_CHAR, LEX_FIN, LEX_NULL};
+		LEX_NEQ, LEX_GEQ, LEX_DEQ, LEX_TEQ, LEX_STRING, LEX_CHAR, LEX_FIN, LEX_NULL};
 
 
 	/* HERE LEX ANALYSATOR BASED ON GRAPH */
@@ -307,7 +311,7 @@ Lexem Scanner::get_lex(){
 				current_state = NUMB;
 			} 
 
-
+            
 
 			/* HERE NEED TO INSERT string processing "..." and '.'*/
 			else if (c== '\"') //|| c== '\'') 
