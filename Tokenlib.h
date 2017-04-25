@@ -19,8 +19,8 @@ enum type_of_lexem{
 	LEX_DELETE, //9
 	LEX_DO, //10
 	LEX_ELSE, //11
-	LEX_FOR, //13
 	LEX_FINALLY, //12
+	LEX_FOR, //13
 	LEX_FUNCTION, //14
 	LEX_IF, //15
 	LEX_IN, //16
@@ -64,6 +64,9 @@ enum type_of_lexem{
 	LEX_LBRACE, //54
 	LEX_RBRACE, //55
 	LEX_STRING, //56
+    LEX_CHAR, //57
+    LEX_TRUE, //58
+    LEX_FALSE //59
 };
 
 
@@ -116,7 +119,7 @@ class Identificator{
 
 class Scanner{
 	
-	enum state{ H , IDENT , NUMB , COM1 , COM2 , ALE , COMP,DELIM , NEQ , STRING,ERROR};
+    enum state { H , IDENT , NUMB , COM1 , COM2 , ALE , COMP , DELIM , NEQ , STRING , ERROR};
 	static const char *TW[];
 	static type_of_lexem words[];
 	static const char *TD[];
