@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 #include "interpretlib.h"
-using namespace std;
 
 #define PROG_PATH "./input_file" 
 
@@ -366,5 +365,4 @@ Lexem Scanner::get_lex(){
 
 
 	} while ( true );
-
 }
