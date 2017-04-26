@@ -18,7 +18,7 @@ class Parser{
 	void expression();
 	void simple_expression();
 	void infix();
-	//void bracket_expression();
+	void condition();
 	///////////
 	///////////
 	///////////

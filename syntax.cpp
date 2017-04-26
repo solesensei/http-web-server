@@ -28,8 +28,13 @@ void Parser::operat(){
 		else
 			throw current_lexem;
 	}
+	else if(cur_type==LEX_IF){
+		get_lexem();
+		condition();
+	}
 	else{
 		expression();
+		get_lexem();
 	}
 }
 
@@ -44,14 +49,13 @@ void Parser::expression(){
 	simple_expression();
 	infix();
 	if(cur_type==LEX_SEMICOLON){
-		get_lexem();
-	}	
+		//get_lexem();
+	}
 }
 
 void Parser::simple_expression(){
 	if(cur_type==LEX_ID || cur_type == LEX_NUM || cur_type == LEX_STRING){
 		get_lexem();
-		
 	}
 	else if(cur_type==LEX_LPAREN){
 		get_lexem();
@@ -88,7 +92,7 @@ void Parser::var_definition(){
 		get_lexem();
 		if(cur_type==LEX_EQ){
 			get_lexem();
-			simple_expression();
+			expression();
 		}
 		else if(cur_type==LEX_SEMICOLON){
 			get_lexem();
@@ -117,4 +121,22 @@ void Parser::var_definition(){
 		throw current_lexem;
 	}
 	get_lexem();
+}
+
+void Parser::condition(){
+	if(cur_type==LEX_LPAREN){
+		get_lexem();
+		simple_expression();
+		if(cur_type==LEX_RPAREN){
+			get_lexem();
+			operat();
+			get_lexem();
+			if(cur_type==LEX_ELSE){
+				operat();
+			}
+		}
+		else{
+			throw current_lexem;
+		}
+	}
 }	

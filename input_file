@@ -1,15 +1,16 @@
 {
 	if(b){
-		b = false;
+		b=1;
+	}
+	else if(c){
+		c=1;
 	}
 	else{
-		b = true;
+		var d = c + b;
 	}
-
-	var str = 5,z;
-	z = (3+4)*(5+6);
-	for(var i = 10; i < 10; i++){
-	}
+	var s = b+5;
+	s = 3+5;
+	str = "hello " + "world" + "!";
 }
 @ <- end of file
 any text here
