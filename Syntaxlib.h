@@ -19,6 +19,7 @@ class Parser{
 	void simple_expression();
 	void infix();
 	void condition();
+	void cycle();
 	///////////
 	///////////
 	///////////
