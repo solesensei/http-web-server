@@ -12,6 +12,7 @@ class Parser{
 
 	//procedures of recursive descent parser//
 	void sentence();
+	void function();
 	void operat();
 	void block();
 	void var_definition();
@@ -20,6 +21,7 @@ class Parser{
 	void infix();
 	void condition();
 	void cycle();
+	void transition();
 	///////////
 	///////////
 	///////////

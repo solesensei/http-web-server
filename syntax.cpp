@@ -11,9 +11,51 @@ void Parser::analyze(){
 }
 
 void Parser::sentence(){
-	operat();
+	if(cur_type==LEX_FUNCTION){
+		function();
+	}
+	else{
+		operat();
+	}
 }
-
+void Parser::function(){
+	get_lexem();
+	if(cur_type==LEX_ID){
+		get_lexem();
+		if(cur_type==LEX_LPAREN){
+			get_lexem();
+			if(cur_type==LEX_ID){
+				get_lexem();
+				while(cur_type==LEX_COMMA){
+					get_lexem();
+					if (cur_type==LEX_ID){
+						get_lexem();
+					}
+					else{
+						throw current_lexem;
+					}
+				}
+				if(cur_type==LEX_RPAREN){
+					get_lexem();
+					get_lexem();
+					block();
+				}
+				else{
+					throw current_lexem;
+				}
+			}
+			else{
+				throw current_lexem;
+			}
+		}
+		else{
+			throw current_lexem;
+		}
+	}
+	else{
+		throw current_lexem;
+	}
+}
 void Parser::operat(){
 	if(cur_type==LEX_VAR){
 		get_lexem();
@@ -35,6 +77,13 @@ void Parser::operat(){
 	else if(cur_type==LEX_FOR||cur_type==LEX_WHILE||cur_type==LEX_DO){
 		cycle();
 	}
+	else if(cur_type==LEX_BREAK||cur_type==LEX_CONTINUE||cur_type==LEX_RETURN){
+		transition();
+	}
+	/*empty operator*/
+	else if(cur_type==LEX_SEMICOLON){
+		get_lexem();
+	}
 	else{
 		expression();
 		get_lexem();
@@ -51,9 +100,6 @@ void Parser::expression(){
 	//add prefix and postfix
 	simple_expression();
 	infix();
-	/*if(cur_type==LEX_SEMICOLON){
-		//get_lexem();
-	}*/
 }
 
 void Parser::simple_expression(){
@@ -71,6 +117,9 @@ void Parser::simple_expression(){
 			throw current_lexem;
 		}
 	}
+	else if(cur_type==LEX_SEMICOLON){
+		return;
+	}
 	else{
 		throw current_lexem;
 	}
@@ -85,7 +134,7 @@ void Parser::infix(){
 		expression();
 	}
 	else if(cur_type==LEX_RPAREN || cur_type==LEX_SEMICOLON){
-
+		return;
 	}
 	else{
 		throw current_lexem;
@@ -131,7 +180,7 @@ void Parser::var_definition(){
 void Parser::condition(){
 	if(cur_type==LEX_LPAREN){
 		get_lexem();
-		simple_expression();
+		expression();
 		if(cur_type==LEX_RPAREN){
 			get_lexem();
 			operat();
@@ -226,4 +275,40 @@ void Parser::cycle(){
 			throw current_lexem;
 		}
 	}
+}
+
+void Parser::transition(){
+	/*break operator*/
+	if(cur_type==LEX_BREAK){
+		get_lexem();
+		if(cur_type==LEX_SEMICOLON){
+			get_lexem();
+		}
+		else{
+			throw current_lexem;
+		}
+	}
+	else if(cur_type==LEX_CONTINUE){
+		get_lexem();
+		if(cur_type==LEX_CONTINUE){
+			get_lexem();
+			if(cur_type==LEX_SEMICOLON){
+				get_lexem();
+			}
+			else{
+				throw current_lexem;
+			}
+		}
+	}
+	else if(cur_type==LEX_RETURN){
+		get_lexem();
+		expression();
+		if(cur_type==LEX_SEMICOLON){
+			get_lexem();
+		}
+		else{
+			throw current_lexem;
+		}
+	}
+
 }
