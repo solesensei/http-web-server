@@ -1,8 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include "interpretlib.h"
-using namespace std;
-
 
 void Parser::analyze(){
 	get_lexem();
