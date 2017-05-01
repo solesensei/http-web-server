@@ -1,7 +1,9 @@
+#ifndef SYNTAXLIB_H
+#define SYNTAXLIB_H
+
 #include "Tokenlib.h"
 #include <stack>
 using namespace std;
-
 class Parser{
 	Lexem current_lexem;
 	type_of_lexem cur_type;
@@ -18,21 +20,11 @@ class Parser{
 	void var_definition();
 	void expression();
 	void simple_expression();
+	void prefix();
 	void infix();
 	void condition();
 	void cycle();
 	void transition();
-	///////////
-	///////////
-	///////////
-	///////////
-	///////////
-	///////////
-	///////////
-	///////////
-
-
-
  public:
 	void get_lexem(){
 		current_lexem = scan.get_lex();
@@ -43,3 +35,4 @@ class Parser{
  	Parser(const char* program): scan(program) {}
  	void analyze();
 };
+#endif

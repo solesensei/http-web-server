@@ -1,8 +1,9 @@
 #include <iostream>
 #include <fstream>
+#include <string>
 #include "interpretlib.h"
-using namespace std;
 
+using namespace std;
 
 void Parser::analyze(){
 	get_lexem();
@@ -32,7 +33,7 @@ void Parser::function(){
 						get_lexem();
 					}
 					else{
-						throw current_lexem;
+						throw string("parameter's name expected\n");
 					}
 				}
 				if(cur_type==LEX_RPAREN){
@@ -41,19 +42,19 @@ void Parser::function(){
 					block();
 				}
 				else{
-					throw current_lexem;
+					throw string("')' expected\n");
 				}
 			}
 			else{
-				throw current_lexem;
+				throw string("parameter's name expected\n");
 			}
 		}
 		else{
-			throw current_lexem;
+			throw string("'(' expected\n");
 		}
 	}
 	else{
-		throw current_lexem;
+		throw string("function name expected\n");
 	}
 }
 void Parser::operat(){
@@ -68,7 +69,7 @@ void Parser::operat(){
 			get_lexem();
 		}
 		else
-			throw current_lexem;
+			throw string("'}' expected\n");
 	}
 	else if(cur_type==LEX_IF){
 		get_lexem();
@@ -98,8 +99,21 @@ void Parser::block(){
 
 void Parser::expression(){
 	//add prefix and postfix
+	prefix();
 	simple_expression();
 	infix();
+}
+void Parser::prefix(){
+	if(cur_type==LEX_MINUS || cur_type == LEX_PLUS){
+		get_lexem();
+		return;
+	}
+	else if(cur_type==LEX_ID || cur_type == LEX_NUM || cur_type == LEX_STRING || cur_type==LEX_LPAREN){
+		return;
+	}
+	else{
+		throw string("prefix expression expected\n");
+	}
 }
 
 void Parser::simple_expression(){
@@ -110,26 +124,25 @@ void Parser::simple_expression(){
 		get_lexem();
 		expression();
 		if(cur_type==LEX_RPAREN){
-			cout << "hehe\n";
 			get_lexem();
 		}
 		else{
-			throw current_lexem;
+			throw string("')' expected\n");
 		}
 	}
 	else if(cur_type==LEX_SEMICOLON){
 		return;
 	}
 	else{
-		throw current_lexem;
+		throw string("';' expected\n");
 	}
 }
 
 void Parser::infix(){
-	//add all infix operations l8r
-	if(cur_type==LEX_PLUS || cur_type==LEX_MINUS || cur_type==LEX_TIMES || cur_type == LEX_SLASH || cur_type==LEX_EQ || \
-	   cur_type==LEX_DEQ || cur_type==LEX_TEQ || cur_type==LEX_LSS || cur_type==LEX_GTR || cur_type==LEX_LEQ || \
-	   cur_type==LEX_NEQ || cur_type==LEX_GEQ){
+	if(cur_type==LEX_PLUS || cur_type==LEX_MINUS || cur_type==LEX_TIMES ||\
+	   cur_type==LEX_SLASH || cur_type==LEX_EQ || cur_type==LEX_DEQ || \
+	   cur_type==LEX_TEQ || cur_type==LEX_LSS || cur_type==LEX_GTR ||\
+	   cur_type==LEX_LEQ || cur_type==LEX_NEQ || cur_type==LEX_GEQ){
 		get_lexem();
 		expression();
 	}
@@ -137,7 +150,7 @@ void Parser::infix(){
 		return;
 	}
 	else{
-		throw current_lexem;
+		throw string("infix expression expected\n");
 	}
 }
 
@@ -163,16 +176,16 @@ void Parser::var_definition(){
 					}
 				}
 				else{
-					throw current_lexem;
+					throw "variable's name expected\n";
 				}
 			}
 			else{
-				throw current_lexem;
+				throw "',' expected\n";
 			}
 		}
 	}
 	else{
-		throw current_lexem;
+		throw "variable's name expected\n";
 	}
 	get_lexem();
 }
@@ -190,7 +203,7 @@ void Parser::condition(){
 			}
 		}
 		else{
-			throw current_lexem;
+			string("')' expected\n");
 		}
 	}
 }	
@@ -203,12 +216,12 @@ void Parser::cycle(){
 			get_lexem();
 			expression();
 			if(cur_type!=LEX_SEMICOLON){
-				throw current_lexem;
+				throw string("';' expected\n");
 			}
 			get_lexem();
 			expression();
 			if(cur_type!=LEX_SEMICOLON){
-				throw current_lexem;
+				throw string("';' expected\n");
 			}
 			get_lexem();
 			expression();
@@ -217,12 +230,12 @@ void Parser::cycle(){
 				operat();
 			}
 			else{
-				throw current_lexem;
+				throw string("')' expected\n");
 			}
 
 		}
 		else{
-			throw current_lexem;
+			throw string("'(' expected\n");
 		}
 	}
 
@@ -241,19 +254,19 @@ void Parser::cycle(){
 						get_lexem();
 					}
 					else{
-						throw current_lexem;
+						throw string("';' expected\n");
 					}
 				}
 				else{
-					throw current_lexem;
+					throw string("')' expected\n");
 				}
 			}
 			else{
-				throw current_lexem;
+				throw string("'(' expected\n");
 			}
 		}
 		else{
-			throw current_lexem;
+			throw string(" 'while' expected\n");
 		}
 	}
 
@@ -268,11 +281,11 @@ void Parser::cycle(){
 				operat();
 			}
 			else{
-				throw current_lexem;
+				throw string("')' expected\n");
 			}
 		}
 		else{
-			throw current_lexem;
+			throw string("'(' expected\n");
 		}
 	}
 }
@@ -285,7 +298,7 @@ void Parser::transition(){
 			get_lexem();
 		}
 		else{
-			throw current_lexem;
+			throw string("';' expected\n");
 		}
 	}
 	else if(cur_type==LEX_CONTINUE){
@@ -296,7 +309,7 @@ void Parser::transition(){
 				get_lexem();
 			}
 			else{
-				throw current_lexem;
+				throw string("';' expected\n");
 			}
 		}
 	}
@@ -307,8 +320,7 @@ void Parser::transition(){
 			get_lexem();
 		}
 		else{
-			throw current_lexem;
+			throw string("';' expected\n");
 		}
 	}
-
 }

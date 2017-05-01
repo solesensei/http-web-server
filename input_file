@@ -8,7 +8,7 @@ function main(argc,argv){
 	;
 
 	\\ condition operator
-	if(x==1)
+	if(x==-1)
 		;
 
 	\\ var definition
@@ -43,7 +43,7 @@ function main(argc,argv){
 		b=1;
 	}
 	else if(c!=7){
-		c=1;
+		c=(-5+3);
 	}
 	else{
 		var d = c + b;
