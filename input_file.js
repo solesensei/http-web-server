@@ -1,5 +1,6 @@
+x=3;
 
-\\function
+var z;
 
 function main(argc,argv){
 	
@@ -43,7 +44,7 @@ function main(argc,argv){
 		b=1;
 	}
 	else if(c!=7){
-		c=(-5+3);
+		c=(-5+3);	
 	}
 	else{
 		var d = c + b;

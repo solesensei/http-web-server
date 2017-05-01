@@ -6,9 +6,8 @@ using namespace std;
 
 
 void Parser::analyze(){
-	get_lexem();
+	//get_lexem();
 	sentence();
-	cout << "Syntax - OK" << endl;
 }
 
 void Parser::sentence(){
@@ -40,6 +39,12 @@ void Parser::function(){
 					get_lexem();
 					get_lexem();
 					block();
+					if(cur_type==LEX_RBRACE){
+						get_lexem();
+					}
+					else{
+						throw string("'}' expected\n");
+					}
 				}
 				else{
 					throw string("')' expected\n");
@@ -84,6 +89,9 @@ void Parser::operat(){
 	/*empty operator*/
 	else if(cur_type==LEX_SEMICOLON){
 		get_lexem();
+	}
+	else if(cur_type==LEX_FIN){
+		return;
 	}
 	else{
 		expression();
@@ -146,7 +154,8 @@ void Parser::infix(){
 		get_lexem();
 		expression();
 	}
-	else if(cur_type==LEX_RPAREN || cur_type==LEX_SEMICOLON){
+	else if(cur_type==LEX_RPAREN || cur_type==LEX_SEMICOLON || cur_type==LEX_FUNCTION || \
+			cur_type==LEX_FOR || cur_type==LEX_DO || cur_type==LEX_WHILE || cur_type == LEX_IF){
 		return;
 	}
 	else{

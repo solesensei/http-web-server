@@ -1,6 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include "interpretlib.h"
+#ifndef PROG_PATH
+#define PROG_PATH "./input_file.js" 
+#endif
 
 int main(){
 	vector<string> TS;  // table of strings

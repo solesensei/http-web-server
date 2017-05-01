@@ -7,7 +7,6 @@
 using namespace std;
 class Parser{
 	Lexem current_lexem;
-	type_of_lexem cur_type;
 	int cur_value;
 	Scanner scan;
 	stack<int> st_int;
@@ -27,6 +26,7 @@ class Parser{
 	void cycle();
 	void transition();
  public:
+ 	type_of_lexem cur_type;
 	void get_lexem(){
 		current_lexem = scan.get_lex();
 		cur_type = current_lexem.get_type();
