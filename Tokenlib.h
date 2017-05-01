@@ -4,6 +4,7 @@
 #include <cstring>
 #include <vector>
 #include <string>
+
 using namespace std;
 
 enum type_of_lexem{

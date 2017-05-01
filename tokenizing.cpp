@@ -7,11 +7,6 @@
 #include <vector>
 #include "interpretlib.h"
 
-#define PROG_PATH "./input_file" 
-
-
-
-
 class table_identificators{
 	Identificator *p;
 	int size;
@@ -19,6 +14,7 @@ class table_identificators{
  public:
  	table_identificators(int max_size){
  		p = new Identificator[size=max_size];
+
  		//p[0]= Identificator();
  		top = 1;
  	}

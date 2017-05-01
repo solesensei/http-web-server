@@ -2,13 +2,6 @@
 #include <fstream>
 #include "interpretlib.h"
 
-#define PROG_PATH "./input_file" 
-
-using namespace std;
-
-
-
-
 int main(){
 	vector<string> TS;  // table of strings
 	ofstream out ("output_file");
