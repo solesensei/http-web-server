@@ -14,8 +14,6 @@ class table_identificators{
  public:
  	table_identificators(int max_size){
  		p = new Identificator[size=max_size];
-
- 		//p[0]= Identificator();
  		top = 1;
  	}
  	~table_identificators(){
@@ -126,17 +124,21 @@ type_of_lexem
 
 
 	/* HERE LEX ANALYSATOR BASED ON GRAPH */
-Lexem Scanner::get_lex(){
+Lexem Scanner::get_lex(int *str_num){
 
 	int d, j;
 	current_state = H;
 	do
 	{
-		switch ( current_state ){
+	switch ( current_state ){
 		case H:
-			if ( c ==' ' || c =='\n' || c=='\r' || c =='\t' ) //just skip all spaces
-					get_char ();
-/* ALPHA */	else if ( isalpha(c) )
+			if ( c ==' ' || c=='\r' || c =='\t' ) //just skip all spaces
+				get_char ();
+			else if(c=='\n'){
+				(*str_num)++;
+				get_char();
+			}
+/* ALPHA */	else if (isalpha(c))
 			{
 				clear (); //clear the buf
 				add (); // add char to buf
@@ -192,8 +194,9 @@ Lexem Scanner::get_lex(){
 				get_char ();
 				current_state = COMP;
 			}
-/* FIN */	else if ( c == '@' )
-				return Lexem ( LEX_FIN );
+/* FIN */	else if ( c == '@' ){
+				return Lexem (LEX_FIN,0);
+			}
 /* ! */		else if ( c == '!' )
 			{
 				clear ();
@@ -219,11 +222,11 @@ Lexem Scanner::get_lex(){
 				get_char ();
 			}
 			else if ( (j = look (buf, TW)) ) // buf == keyword 
-				return Lexem (words[j], j);
+				return Lexem ( words[j],j);
 			else
 			{
 				j = TID.put(buf); // if buf == name[j] return j, else push buf to names
-				return Lexem (LEX_ID, j);
+				return Lexem (LEX_ID,j);
 			}
 		break;
 		
@@ -234,12 +237,13 @@ Lexem Scanner::get_lex(){
 				get_char();
 			}
 			else
-				return Lexem ( LEX_NUM, d );
+				return Lexem (LEX_NUM,d );
 			break;
 
 		case COM1: // ...
 			if ( c == '\n') // until end of line 
 			{
+				(*str_num)++;
 				get_char ();
 				current_state = H;
 			}
@@ -274,17 +278,17 @@ Lexem Scanner::get_lex(){
 					add();
 					get_char();
 					j = look ( buf, TD );
-					return Lexem ( dlms[j], j );
+					return Lexem (dlms[j],j );
 				}
 				else{
 					j = look ( buf, TD );
-					return Lexem ( dlms[j], j );
+					return Lexem (dlms[j], j );
 				}
 			}
 			else
 			{
 				j = look (buf, TD); // buf == sign 
-				return Lexem ( dlms[j], j );
+				return Lexem (dlms[j],j );
 			}
 			break;
 		case COMP:{
@@ -293,12 +297,12 @@ Lexem Scanner::get_lex(){
 				add ();
 				get_char ();
 				j = look (buf, TD); // buf == sign 
-				return Lexem ( dlms[j], j );
+				return Lexem (dlms[j], j );
 			}
             else 
             {
 				j = look (buf, TD); // buf == sign 
-				return Lexem ( dlms[j], j );
+				return Lexem (dlms[j], j );
             }
 			break;
 
@@ -310,7 +314,7 @@ Lexem Scanner::get_lex(){
 				add ();
 				get_char ();
 				j = look ( buf, TD );
-				return Lexem ( LEX_NEQ, j );
+				return Lexem (LEX_NEQ,j );
 			}
 			else //ERROR: not !=
 
@@ -324,7 +328,7 @@ Lexem Scanner::get_lex(){
 			if ( (j = look(buf, TD)) )
 			{
 				get_char ();
-				return Lexem ( dlms[j], j );
+				return Lexem (dlms[j], j );
 			}
 			else // ERROR
 

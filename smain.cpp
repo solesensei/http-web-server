@@ -6,8 +6,8 @@
 #endif
 
 int main(){
+	Parser p(PROG_PATH);
 	try{
-		Parser p(PROG_PATH);
 		p.get_lexem();
 		p.analyze();
 		while(p.cur_type!=LEX_FIN){
@@ -15,7 +15,7 @@ int main(){
 		}
 		cout << "Syntax - OK\n";
 	}
-	catch(string str){
-		cout << "Syntax - not OK: " << str;
+	catch(error_msg er){
+		cout << "Syntax - not OK Line: "<< p.cur_string_number << endl << er.message;
 	}
 }
