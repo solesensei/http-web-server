@@ -7,6 +7,7 @@
 
 using namespace std;
 
+
 enum type_of_lexem{
 	LEX_NULL, //0
 	LEX_AND, //1
@@ -75,14 +76,16 @@ enum type_of_lexem{
 class Lexem{
 	type_of_lexem type_lex;
 	int value_lex;
- public:
- 	Lexem(type_of_lexem t = LEX_NULL, int v = 0){
+ public:	
+ 	Lexem(type_of_lexem t = LEX_NULL, int v=0){
  		type_lex = t;
  		value_lex = v;
  	}
  	type_of_lexem get_type(){ return type_lex; }
 
  	int get_value(){ return value_lex; }
+
+
 
  	friend ostream& operator<< (ostream &s, Lexem l){
  		s << '(' << l.type_lex << " - " << l.value_lex << "); ";
@@ -185,7 +188,7 @@ class Scanner{
  		clear();
  		get_char();
  	}
- 	Lexem get_lex();
+ 	Lexem get_lex(int *n);
 };	
 
 #endif

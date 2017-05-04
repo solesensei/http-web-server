@@ -5,6 +5,7 @@
 using namespace std;
 
 
+
 void Parser::analyze(){
 	//get_lexem();
 	sentence();
@@ -33,34 +34,51 @@ void Parser::function(){
 						get_lexem();
 					}
 					else{
-						throw string("parameter's name expected\n");
+						throw error_msg(string("parameter's name expected\n"),current_lexem);
 					}
 				}
 				if(cur_type==LEX_RPAREN){
 					get_lexem();
 					get_lexem();
+					if(cur_type==LEX_FIN){
+						throw error_msg("'}' expected\n",current_lexem);
+					}
 					block();
 					if(cur_type==LEX_RBRACE){
 						get_lexem();
 					}
 					else{
-						throw string("'}' expected\n");
+						throw error_msg(string("'}' expected\n"),current_lexem);
 					}
 				}
 				else{
-					throw string("')' expected\n");
+					throw error_msg(string("')' expected\n"),current_lexem);
 				}
 			}
+			else if(cur_type==LEX_RPAREN){
+					get_lexem();
+					get_lexem();
+					if(cur_type==LEX_FIN){
+						throw error_msg("'}' expected\n",current_lexem);
+					}
+					block();
+					if(cur_type==LEX_RBRACE){
+						get_lexem();
+					}
+					else{
+						throw error_msg(string("'}' expected\n"),current_lexem);
+					}
+			}
 			else{
-				throw string("parameter's name expected\n");
+				throw error_msg(string("parameter's name expected\n"),current_lexem);
 			}
 		}
 		else{
-			throw string("'(' expected\n");
+			throw error_msg(string("'(' expected\n"),current_lexem);
 		}
 	}
 	else{
-		throw string("function name expected\n");
+		throw error_msg(string("function name expected\n"),current_lexem);
 	}
 }
 void Parser::operat(){
@@ -75,7 +93,7 @@ void Parser::operat(){
 			get_lexem();
 		}
 		else
-			throw string("'}' expected\n");
+			throw error_msg(string("'}' expected\n"),current_lexem);
 	}
 	else if(cur_type==LEX_IF){
 		get_lexem();
@@ -103,6 +121,9 @@ void Parser::operat(){
 void Parser::block(){
 	while(cur_type!=LEX_RBRACE){
 		operat();
+		if(cur_type==LEX_FIN){
+			throw error_msg(string("'}' expected\n"),current_lexem);
+		}
 	}
 }
 
@@ -123,7 +144,7 @@ void Parser::prefix(){
 		return;
 	}
 	else{
-		throw string("prefix expression expected\n");
+		throw error_msg(string("prefix expression expected\n"),current_lexem);
 	}
 }
 
@@ -139,14 +160,14 @@ void Parser::simple_expression(){
 			get_lexem();
 		}
 		else{
-			throw string("')' expected\n");
+			throw error_msg(string("')' expected\n"),current_lexem);
 		}
 	}
 	else if(cur_type==LEX_SEMICOLON){
 		return;
 	}
 	else{
-		throw string("';' expected\n");
+		throw error_msg(string("';' expected\n"),current_lexem);
 	}
 }
 
@@ -164,7 +185,7 @@ void Parser::infix(){
 		return;
 	}
 	else{
-		throw string("infix expression expected\n");
+		throw error_msg(string("infix expression expected\n"),current_lexem);
 	}
 }
 
@@ -197,16 +218,16 @@ void Parser::var_definition(){
 					}
 				}
 				else{
-					throw "variable's name expected\n";
+					throw error_msg(string("variable's name expected\n"),current_lexem);
 				}
 			}
 			else{
-				throw "',' expected\n";
+				throw error_msg(string("',' expected\n"),current_lexem);
 			}
 		}
 	}
 	else{
-		throw "variable's name expected\n";
+		throw error_msg(string("variable's name expected\n"),current_lexem);
 	}
 	get_lexem();
 }
@@ -225,7 +246,7 @@ void Parser::condition(){
 			}
 		}
 		else{
-			string("')' expected\n");
+			error_msg(string("')' expected\n"),current_lexem);
 		}
 	}
 }	
@@ -238,13 +259,13 @@ void Parser::cycle(){
 			get_lexem();
 			expression();
 			if(cur_type!=LEX_SEMICOLON){
-				throw string("';' expected\n");
+				throw error_msg(string("';' expected\n"),current_lexem);
 			}
 			get_lexem();
 			expression();
 			eq_bool();
 			if(cur_type!=LEX_SEMICOLON){
-				throw string("';' expected\n");
+				throw error_msg(string("';' expected\n"),current_lexem);
 			}
 			get_lexem();
 			expression();
@@ -253,12 +274,12 @@ void Parser::cycle(){
 				operat();
 			}
 			else{
-				throw string("')' expected\n");
+				throw error_msg(string("')' expected\n"),current_lexem);
 			}
 
 		}
 		else{
-			throw string("'(' expected\n");
+			throw error_msg(string("'(' expected\n"),current_lexem);
 		}
 	}
 
@@ -278,19 +299,19 @@ void Parser::cycle(){
 						get_lexem();
 					}
 					else{
-						throw string("';' expected\n");
+						throw error_msg(string("';' expected\n"),current_lexem);
 					}
 				}
 				else{
-					throw string("')' expected\n");
+					throw error_msg(string("')' expected\n"),current_lexem);
 				}
 			}
 			else{
-				throw string("'(' expected\n");
+				throw error_msg(string("'(' expected\n"),current_lexem);
 			}
 		}
 		else{
-			throw string(" 'while' expected\n");
+			throw error_msg(string(" 'while' expected\n"),current_lexem);
 		}
 	}
 
@@ -306,11 +327,11 @@ void Parser::cycle(){
 				operat();
 			}
 			else{
-				throw string("')' expected\n");
+				throw error_msg(string("')' expected\n"),current_lexem);
 			}
 		}
 		else{
-			throw string("'(' expected\n");
+			throw error_msg(string("'(' expected\n"),current_lexem);
 		}
 	}
 }
@@ -323,7 +344,7 @@ void Parser::transition(){
 			get_lexem();
 		}
 		else{
-			throw string("';' expected\n");
+			throw error_msg(string("';' expected\n"),current_lexem);
 		}
 	}
 	else if(cur_type==LEX_CONTINUE){
@@ -334,7 +355,7 @@ void Parser::transition(){
 				get_lexem();
 			}
 			else{
-				throw string("';' expected\n");
+				throw error_msg(string("';' expected\n"),current_lexem);
 			}
 		}
 	}
@@ -345,7 +366,7 @@ void Parser::transition(){
 			get_lexem();
 		}
 		else{
-			throw string("';' expected\n");
+			throw error_msg(string("';' expected\n"),current_lexem);
 		}
 	}
 }

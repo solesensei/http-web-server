@@ -1,6 +1,7 @@
 #ifndef SYNTAXLIB_H
 #define SYNTAXLIB_H
 
+<<<<<<< HEAD
 using namespace std;
 
 #include "Tokenlib.h"
@@ -35,6 +36,20 @@ T stack <T, max_size >::pop(){
 	else
 		throw "Stack_is_empty";
 }	
+=======
+#include "interpretlib.h"	
+#include <stack>
+
+using namespace std;
+struct error_msg{
+	string message;
+	Lexem error_lex;
+	error_msg(string msg,Lexem& er_l){
+		message=msg;
+		error_lex=er_l;
+	}
+};
+>>>>>>> 0bd43bae762e9a9c6bf26f932c1ff743a7ac05df
 
 class Parser{
 	Lexem current_lexem;
@@ -65,14 +80,22 @@ class Parser{
 	// void check_id_in_read ();
 
  public:
+ 	int cur_string_number;
  	type_of_lexem cur_type;
 	void get_lexem(){
-		current_lexem = scan.get_lex();
+		current_lexem = scan.get_lex(&cur_string_number);
 		cur_type = current_lexem.get_type();
 		cur_value = current_lexem.get_value();
 	}
+<<<<<<< HEAD
 	// Poliz prog;
  	Parser(const char* program): scan(program) {}
+=======
+
+ 	Parser(const char* program):scan(program){
+ 		cur_string_number=0;
+ 	}
+>>>>>>> 0bd43bae762e9a9c6bf26f932c1ff743a7ac05df
  	void analyze();
 };
 #endif

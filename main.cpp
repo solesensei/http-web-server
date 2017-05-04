@@ -10,6 +10,7 @@ int main(){
 	ofstream out ("output_file");
  try
  {
+ 	int str_k;
 	const char* program = PROG_PATH;
 	Scanner scanner ( program );
 	Lexem lex;
@@ -17,7 +18,7 @@ int main(){
 	while (lex.get_type() != LEX_FIN)
 	{
 		if ( ++k % 10 == 0) out << endl;
-		lex = scanner.get_lex();
+		lex = scanner.get_lex(&str_k);
 		out << lex;
 	}	
  }
