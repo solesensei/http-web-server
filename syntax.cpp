@@ -21,6 +21,7 @@ void Parser::sentence(){
 void Parser::function(){
 	get_lexem();
 	if(cur_type==LEX_ID){
+		dec ( cur_type );
 		get_lexem();
 		if(cur_type==LEX_LPAREN){
 			get_lexem();
@@ -106,11 +107,13 @@ void Parser::block(){
 }
 
 void Parser::expression(){
-	//add prefix and postfix
+	//add postfix
 	prefix();
 	simple_expression();
 	infix();
+	// check_op();
 }
+
 void Parser::prefix(){
 	if(cur_type==LEX_MINUS || cur_type == LEX_PLUS){
 		get_lexem();
@@ -126,6 +129,7 @@ void Parser::prefix(){
 
 void Parser::simple_expression(){
 	if(cur_type==LEX_ID || cur_type == LEX_NUM || cur_type == LEX_STRING){
+        check_id();
 		get_lexem();
 	}
 	else if(cur_type==LEX_LPAREN){
@@ -151,6 +155,7 @@ void Parser::infix(){
 	   cur_type==LEX_SLASH || cur_type==LEX_EQ || cur_type==LEX_DEQ || \
 	   cur_type==LEX_TEQ || cur_type==LEX_LSS || cur_type==LEX_GTR ||\
 	   cur_type==LEX_LEQ || cur_type==LEX_NEQ || cur_type==LEX_GEQ){
+        st_lex.push(cur_type); // push operation to stack
 		get_lexem();
 		expression();
 	}
@@ -164,11 +169,15 @@ void Parser::infix(){
 }
 
 void Parser::var_definition(){
+    st_int.reset();
 	if(cur_type==LEX_ID){
+		st_int.push ( cur_value );
+		check_id(); //push var to stack 
 		get_lexem();
 		if(cur_type==LEX_EQ){
 			get_lexem();
 			expression();
+			eq_type();
 		}
 		else if(cur_type==LEX_SEMICOLON){
 			get_lexem();
@@ -178,10 +187,13 @@ void Parser::var_definition(){
 			if(cur_type==LEX_COMMA){
 				get_lexem();
 				if(cur_type==LEX_ID){
+                    st_int.push ( cur_value );
+					check_id();
 					get_lexem();
 					if(cur_type==LEX_EQ){
 						get_lexem();
 						simple_expression();
+						eq_type();
 					}
 				}
 				else{
@@ -203,6 +215,7 @@ void Parser::condition(){
 	if(cur_type==LEX_LPAREN){
 		get_lexem();
 		expression();
+		eq_bool();
 		if(cur_type==LEX_RPAREN){
 			get_lexem();
 			operat();
@@ -229,6 +242,7 @@ void Parser::cycle(){
 			}
 			get_lexem();
 			expression();
+			eq_bool();
 			if(cur_type!=LEX_SEMICOLON){
 				throw string("';' expected\n");
 			}
@@ -257,6 +271,7 @@ void Parser::cycle(){
 			if(cur_type==LEX_LPAREN){
 				get_lexem();
 				expression();
+				eq_bool();
 				if(cur_type==LEX_RPAREN){
 					get_lexem();
 					if(cur_type==LEX_SEMICOLON){
@@ -285,6 +300,7 @@ void Parser::cycle(){
 		if(cur_type==LEX_LPAREN){
 			get_lexem();
 			expression();
+			eq_bool();
 			if(cur_type==LEX_RPAREN){
 				get_lexem();
 				operat();
@@ -332,4 +348,54 @@ void Parser::transition(){
 			throw string("';' expected\n");
 		}
 	}
+}
+
+/* SEMANTIC */
+
+void Parser::dec ( type_of_lexem type ){
+    int i;
+    while ( !st_int.is_empty()){
+        
+        i = st_int.pop();
+        if ( TID[i].get_declare() )
+            throw "twice";
+        else
+        {
+            TID[i].set_declare();
+            TID[i].set_type(type);
+        }
+    }
+}
+
+void Parser::check_id(){
+    if ( TID[cur_value].get_declare() )
+        st_lex.push(TID[cur_value].get_type());
+    else
+        throw "not declared";
+}
+
+/* add boolean lexem ? 
+void Parser::check_op (){ //add boolean ?
+    type_of_lexem t1, t2, op, t = LEX_VAR, r = LEX_BOOL;
+    t2 = st_lex.pop();
+    op = st_lex.pop();
+    t1 = st_lex.pop();
+    if ( op==LEX_PLUS || op==LEX_MINUS || op==LEX_TIMES || op==LEX_SLASH )
+        r = LEX_VAR;
+   // if ( op == LEX_OR || op == LEX_AND )
+   //     t = LEX_BOOL;
+    if ( t1 == t2 && t1 == t )
+        st_lex.push(r);
+    else
+        throw "wrong types are in operation";
+}
+*/
+
+void Parser::eq_type (){
+    if ( st_lex.pop() != st_lex.pop() ) throw "wrong types are in =";
+}
+
+void Parser::eq_bool (){
+    if ( st_lex.pop() != LEX_BOOL )
+        throw "expression is not boolean";
 }

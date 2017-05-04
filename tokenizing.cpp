@@ -7,24 +7,6 @@
 #include <vector>
 #include "interpretlib.h"
 
-class table_identificators{
-	Identificator *p;
-	int size;
-	int top;
- public:
- 	table_identificators(int max_size){
- 		p = new Identificator[size=max_size];
-
- 		//p[0]= Identificator();
- 		top = 1;
- 	}
- 	~table_identificators(){
- 		delete []p;
- 	}
- 	Identificator& operator[](int k){ return p[k]; }
- 	int put( const char *buf );
-};
-
 int table_identificators::put(const char *buf){
 	for(int j=1; j<top; j++)
 		if(!strcmp(buf,p[j].get_name()))
@@ -33,7 +15,6 @@ int table_identificators::put(const char *buf){
 	top++;
 	return top-1;
 }
-
 /* SETTING UP STATIC TABLES */
 
 /* TABLE OF LANGUAGE KEY WORDS */
@@ -103,7 +84,6 @@ const char* Scanner::TD[]={
 	 NULL
 };
 
-table_identificators TID(100);
 vector<string> TS;
 
 type_of_lexem

@@ -67,6 +67,7 @@ enum type_of_lexem{
 	LEX_LBRACE, //56
 	LEX_RBRACE, //57
 	LEX_STRING, //58
+	LEX_BOOL //59
 };
 
 
@@ -116,6 +117,27 @@ class Identificator{
 	int get_balue(){ return value; }
 	void set_value(int k){ value = k; }
 };
+
+class table_identificators{
+	Identificator *p;
+	int size;
+	int top;
+ public:
+ 	table_identificators(int max_size){
+ 		p = new Identificator[size=max_size];
+
+ 		//p[0]= Identificator();
+ 		top = 1;
+ 	}
+ 	~table_identificators(){
+ 		delete []p;
+ 	}
+ 	Identificator& operator[](int k){ return p[k]; }
+ 	int put( const char *buf );
+};
+
+static table_identificators TID(100);
+
 
 class Scanner{
 	
