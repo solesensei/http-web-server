@@ -193,7 +193,9 @@ void Parser::var_definition(){
     st_int.reset();
 	if(cur_type==LEX_ID){
 		st_int.push ( cur_value );
+		cerr << "Bug here " << endl ;
 		check_id(); //push var to stack 
+		cerr << "Bug fixed" << endl;
 		get_lexem();
 		if(cur_type==LEX_EQ){
 			get_lexem();

@@ -16,6 +16,9 @@ int main(){
 		cout << "Syntax - OK\n";
 	}
 	catch(error_msg er){
-		cout << "Syntax - not OK Line: "<< p.cur_string_number << endl << er.message;
+		cout << "Syntax - not OK Line: "<< p.cur_string_number << " Error: " << er.message << endl;
+	}
+	catch(const char* er){
+		cout << "Semantic - not OK Line: " << p.cur_string_number << " Error: " << er << endl;
 	}
 }
