@@ -22,7 +22,7 @@ syntax analyzer
 
      :make smain
 
-### Third stage :: Semantics
+### Third stage :: semantics
 semantic analyzer
     
     smain.cpp
