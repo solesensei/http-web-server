@@ -51,6 +51,7 @@ const char* Scanner::TW[]={
 	"with", //29
     "true", //30
     "false",//31
+	"bool",//32
 	 NULL
 };
 
@@ -93,7 +94,7 @@ type_of_lexem
 		LEX_FINALLY, LEX_FOR, LEX_FUNCTION, LEX_IF, LEX_IN, 
 		LEX_INSTANCEOF, LEX_LET, LEX_NEW, LEX_OR, LEX_RETURN,
 		LEX_SWITCH, LEX_THROW, LEX_TRY, LEX_TYPEOF, LEX_VAR, 
-		LEX_VOID, LEX_WHILE, LEX_WITH, LEX_TRUE, LEX_FALSE, LEX_NULL};
+		LEX_VOID, LEX_WHILE, LEX_WITH, LEX_TRUE, LEX_FALSE, LEX_BOOL, LEX_NULL};
 
 
 type_of_lexem
