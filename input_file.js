@@ -1,9 +1,8 @@
-function main(){
-	x=3;
-	var z;
-	for(i=1;i<10;i=i+1){
-		z=x+1;
-	}
-	return 1;
+function main (){
+	\\ why comments look like that? not like //
+	var x = 1;
+	x = 2;
+	var x = y;
+	y = 1;
 }
 @
