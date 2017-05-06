@@ -8,8 +8,7 @@
 int main(){
 	vector<string> TS;  // table of strings
 	ofstream out ("output_file");
- try
- {
+ try{
  	int str_k;
 	const char* program = PROG_PATH;
 	Scanner scanner ( program );
@@ -23,14 +22,13 @@ int main(){
 	}	
  }
 
-catch(invalid_argument& err)
-	{
+catch(invalid_argument& err){
 		cerr << "Exception catched : " << err.what() << endl;
 	}
-catch(char& c)
-	{
+catch(char& c){
 		cerr << "Exception catched : lex error : " << c << endl;
 	}
+
 	out << endl << endl;
 	int i=1;
 	vector <string>::const_iterator p = TS.begin();
@@ -39,5 +37,23 @@ catch(char& c)
  		p++;
  		i++;
  	}
+	 /* syntax + semantic  */
+	Parser par(PROG_PATH);
+try{
+	par.get_lexem();
+	par.analyze();
+	while(par.cur_type!=LEX_FIN){
+		par.analyze();
+	}
+	cout << "Syntax - OK\n";
+	cout << "Semantic - OK\n";
+	}
+catch(error_msg er){
+	cout << "Syntax - not OK Line: "<< par.cur_string_number << " Error: " << er.message;
+	}
+catch(const char* er){
+	cout << "Semantic - not OK Line: " << par.cur_string_number << " Error: " << er << endl;
+	}
+
 	return 0;
 }
