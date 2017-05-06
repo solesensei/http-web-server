@@ -82,7 +82,7 @@ class Parser{
 	}
 	// Poliz prog;
  	Parser(const char* program):scan(program){
- 		cur_string_number=0;
+ 		cur_string_number = 1;
  	}
  	void analyze();
 };
