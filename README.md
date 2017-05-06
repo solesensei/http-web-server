@@ -7,7 +7,7 @@
 ### First stage :: tokenizing
 token analyzer
 
-    main.cpp
+    tmain.cpp
     tokenizing.cpp
     Tokenlib.h
 
@@ -21,6 +21,18 @@ syntax analyzer
      Syntaxlib.h
 
      :make smain
+
+### Third stage :: Semantics
+semantic analyzer
+    
+    smain.cpp
+    syntax.cpp
+    semantic.cpp
+    interpretlib.h
+
+    :make smain
+
+### Forth stage :: Poliz
 
 ---
 
