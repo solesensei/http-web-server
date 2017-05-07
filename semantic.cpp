@@ -39,6 +39,7 @@ void Parser::check_op (){
         st_lex.push(r);
     else
         throw "wrong types are in operation";
+    Poliz.push_back(Lexem(op));
 }
 
 void Parser::eq_type (){

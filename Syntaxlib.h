@@ -3,6 +3,8 @@
 
 using namespace std;
 #include "interpretlib.h"	
+#include <vector>
+
 
 template <class T, int max_size > class stack{
 	T s[max_size];
@@ -75,6 +77,9 @@ class Parser{
  public:
  	int cur_string_number;
  	type_of_lexem cur_type;
+ 	vector<Lexem> Poliz;
+
+
 	void get_lexem(){
 		current_lexem = scan.get_lex(&cur_string_number);
 		cur_type = current_lexem.get_type();
@@ -82,6 +87,7 @@ class Parser{
 	}
 	// Poliz prog;
  	Parser(const char* program):scan(program){
+ 		Poliz.reserve(1000);
  		cur_string_number = 1;
  	}
  	void analyze();

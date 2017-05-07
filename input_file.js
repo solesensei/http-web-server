@@ -1,8 +1,6 @@
 function main (){
-	\\ why comments look like that? not like //
-	var x = 1;
-	x = 2;
-	var x = y;
-	y = 1;
+	\\ why comments look like that? i dont know you were writing lexical scanner.
+	var y;
+	y=5+3;	
 }
 @

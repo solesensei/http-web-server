@@ -155,8 +155,14 @@ void Parser::prefix(){
 
 void Parser::simple_expression(){
 	if(cur_type==LEX_ID || cur_type == LEX_NUM || cur_type == LEX_STRING){
-        if (cur_type == LEX_ID) check_id();
-		else st_lex.push( LEX_VAR ); 
+        if (cur_type == LEX_ID){
+        	check_id();
+        	Poliz.push_back(current_lexem);
+        }
+		else{ 
+			st_lex.push( LEX_VAR );
+			Poliz.push_back(current_lexem);
+		} 
 		get_lexem();
 	}
 	else if(cur_type==LEX_LPAREN){
