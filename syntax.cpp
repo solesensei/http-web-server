@@ -158,13 +158,20 @@ void Parser::simple_expression(){
 	if(cur_type==LEX_ID || cur_type == LEX_NUM || cur_type == LEX_STRING){
         if (cur_type == LEX_ID){
         	check_id();
-        	Poliz.push_back(current_lexem);
+        	//Poliz.push_back(current_lexem);
         }
 		else{ 
-			st_lex.push( LEX_VAR );
-			Poliz.push_back(current_lexem);
+			st_lex.push(LEX_VAR);
+			//Poliz.push_back(current_lexem);
 		} 
+		Lexem temp = current_lexem;
 		get_lexem();
+		if(cur_type==LEX_EQ){
+			Poliz.push_back(Lexem(POLIZ_ADDRESS,cur_value));
+		}
+		else{
+			Poliz.push_back(temp);
+		}
 	}
 	else if(cur_type==LEX_LPAREN){
 		get_lexem();
