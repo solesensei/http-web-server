@@ -143,6 +143,7 @@ void Parser::expression(){
 void Parser::prefix(){
 	if(cur_type==LEX_MINUS || cur_type == LEX_PLUS){
 		get_lexem();
+		/* Here uno MINUS and PLUS */
 		return;
 	}
 	else if(cur_type==LEX_ID || cur_type == LEX_NUM || cur_type == LEX_STRING || cur_type==LEX_LPAREN){
@@ -209,12 +210,14 @@ void Parser::var_definition(){
 	if(cur_type==LEX_ID){
 		st_int.push ( cur_value );
         dec ( LEX_VAR );
-		check_id();  
+		check_id();
+		Poliz.push_back(Lexem(POLIZ_ADDRESS,cur_value));
 		get_lexem();
 		if(cur_type==LEX_EQ){
 			get_lexem();
 			expression();
 			eq_type();
+			Poliz.push_back(Lexem(LEX_EQ));
 		}
 		else if(cur_type==LEX_SEMICOLON){
 			get_lexem();
@@ -227,11 +230,13 @@ void Parser::var_definition(){
                     st_int.push ( cur_value );
         			dec ( LEX_VAR );
 					check_id();
+					Poliz.push_back(Lexem(POLIZ_ADDRESS,cur_value));
 					get_lexem();
 					if(cur_type==LEX_EQ){
 						get_lexem();
 						simple_expression();
 						eq_type();
+						Poliz.push_back(Lexem(LEX_EQ));
 					}
 				}
 				else{
