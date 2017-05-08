@@ -118,6 +118,7 @@ void Parser::operat(){
 	}
 	else{
 		expression();
+		Poliz.push_back(Lexem(LEX_SEMICOLON));
 		get_lexem();
 	}
 }
@@ -171,7 +172,7 @@ void Parser::simple_expression(){
 		Lexem temp = current_lexem;
 		get_lexem();
 		if(cur_type==LEX_EQ){
-			Poliz.push_back(Lexem(POLIZ_ADDRESS,cur_value));
+			Poliz.push_back(Lexem(POLIZ_ADDRESS,temp.get_value()));
 		}
 		else{
 			Poliz.push_back(temp);
@@ -201,8 +202,10 @@ void Parser::infix(){
 	   cur_type==LEX_TEQ || cur_type==LEX_LSS || cur_type==LEX_GTR ||\
 	   cur_type==LEX_LEQ || cur_type==LEX_NEQ || cur_type==LEX_GEQ ||\
 	   cur_type==LEX_AND || cur_type==LEX_OR){
+	   	Lexem temp = current_lexem;
 		get_lexem();
 		expression();
+		Poliz.push_back(temp);
 	}
 	else if(cur_type==LEX_RPAREN || cur_type==LEX_SEMICOLON || cur_type==LEX_FUNCTION || \
 			cur_type==LEX_FOR || cur_type==LEX_DO || cur_type==LEX_WHILE || cur_type == LEX_IF){
@@ -227,6 +230,7 @@ void Parser::var_definition(){
 		}
 		else if(cur_type==LEX_SEMICOLON){
             dec( LEX_NULL );
+            Poliz.pop_back();
 			get_lexem();
 			return;
 		}

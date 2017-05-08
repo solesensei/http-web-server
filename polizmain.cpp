@@ -65,5 +65,7 @@ catch(const char* er){
 		t++;
 	}
 
+	cout << endl << endl << "Size: " << par.Poliz.size() << endl;
+
 	return 0;
 }
