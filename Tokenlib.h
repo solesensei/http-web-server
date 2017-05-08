@@ -69,6 +69,8 @@ enum type_of_lexem{
 	LEX_LBRACE, //57
 	LEX_RBRACE, //58
 	LEX_STRING, //59
+	LEX_UNOMINUS,//60
+	LEX_UNOPLUS //61
 };
 
 

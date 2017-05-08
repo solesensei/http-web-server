@@ -1,8 +1,6 @@
 //Poliz - regular expressions, still bug with z = x = y!
 var x;
-var y;
-var z;
-y = x*((5+3)*6);
-z = x = y;
-
+if(x>3 or x<5){
+	x=5;
+}
 @

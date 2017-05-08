@@ -1,9 +1,14 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 #include "interpretlib.h"
 using namespace std;
 
+
+// this vector stores gaps to fill in Poliz
+
+vector <int> spaces;
 
 
 void Parser::analyze(){
@@ -268,9 +273,16 @@ void Parser::condition(){
 		get_lexem();
 		expression();
 		eq_bool();
+		spaces.push_back(Poliz.size());
+		Poliz.push_back(Lexem(LEX_NUM,0));
+		Poliz.push_back(POLIZ_FGO);
 		if(cur_type==LEX_RPAREN){
 			get_lexem();
 			operat();
+			int p = spaces.back();
+			spaces.pop_back();
+			Poliz[p]=Lexem(LEX_NUM,Poliz.size()+1);
+
 			if(cur_type==LEX_ELSE){
 				get_lexem();
 				operat();
