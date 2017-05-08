@@ -357,10 +357,16 @@ void Parser::condition(){
 			operat();
 			int p = spaces.back();
 			spaces.pop_back();
-			Poliz[p]=Lexem(LEX_NUM,Poliz.size()+1);
+			Poliz[p]=Lexem(LEX_NUM,Poliz.size()+3);
 			if(cur_type==LEX_ELSE){
+				spaces.push_back(Poliz.size());
+				Poliz.push_back(Lexem(LEX_NUM,0));
+				Poliz.push_back(POLIZ_GO);
 				get_lexem();
 				operat();
+				int p = spaces.back();
+				spaces.pop_back();
+				Poliz[p]=Lexem(LEX_NUM,Poliz.size()+1);
 			}
 		}
 		else{
