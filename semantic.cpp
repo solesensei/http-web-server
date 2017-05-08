@@ -10,7 +10,7 @@ void Parser::dec ( type_of_lexem type ){
         
         i = st_int.pop();
         if ( TID[i].get_declare() )
-            throw "twice";
+            throw "twice declaration";
         else
         {
             TID[i].set_declare();
@@ -26,34 +26,13 @@ void Parser::check_id(){
         throw "not declared";
 }
 
-void Parser::check_op (){
-    type_of_lexem t1, t2, op, t = LEX_VAR, r = LEX_BOOL;
-    t2 = st_lex.pop();
-    op = st_lex.pop();
-    t1 = st_lex.pop();
-    if ( op == LEX_OR || op == LEX_AND )
-         t = LEX_BOOL;
-    else //all others operation
-         r = LEX_VAR;
-    if ( t1 == t2 && t1 == t )
-        st_lex.push(r);
-    else
-        throw "wrong types are in operation";
-    Poliz.push_back(Lexem(op));
-}
-
-void Parser::eq_type (){
-    if ( st_lex.pop() != st_lex.pop() ) throw "wrong types are in =";
-}
-
-/* how is LEX_BOOL working ?
 void Parser::eq_bool (){
-    if ( st_lex.pop() != LEX_BOOL )
+    if ( st_lex.pop() == LEX_STRING )
         throw "expression is not boolean";
 }
-*/
 
-/* need to add read(id);
+/*
+  need to add read(id);
 void Parser::check_id_in_read (){
     if ( !TID [cur_value].get_declare() )
         throw "not declared";

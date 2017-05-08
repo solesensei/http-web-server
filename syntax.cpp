@@ -22,9 +22,8 @@ void Parser::sentence(){
 void Parser::function(){
 	get_lexem();
 	if(cur_type==LEX_ID){
-		st_int.push ( cur_value );
-		dec ( LEX_FUNCTION );
-		check_id();  
+		st_int.push( cur_value );
+		dec( LEX_FUNCTION );
 		get_lexem();
 		if(cur_type==LEX_LPAREN){
 			get_lexem();
@@ -36,7 +35,6 @@ void Parser::function(){
 					if (cur_type==LEX_ID){
 						st_int.push ( cur_value );
 						dec ( LEX_VAR );
-						check_id();  
 						get_lexem();
 					}
 					else{
@@ -142,8 +140,13 @@ void Parser::expression(){
 
 void Parser::prefix(){
 	if(cur_type==LEX_MINUS || cur_type == LEX_PLUS){
-		get_lexem();
 		/* Here uno MINUS and PLUS */
+        if (cur_type == LEX_MINUS){
+			get_lexem();
+			if (cur_type != LEX_NUM)
+				throw "LEX_NUM expected after uno minus"; 
+		}
+		else get_lexem();
 		return;
 	}
 	else if(cur_type==LEX_ID || cur_type == LEX_NUM || cur_type == LEX_STRING || cur_type==LEX_LPAREN){
@@ -161,7 +164,8 @@ void Parser::simple_expression(){
         	//Poliz.push_back(current_lexem);
         }
 		else{ 
-			st_lex.push(LEX_VAR);
+			st_lex.push( cur_type );
+			dec ( cur_type );
 			//Poliz.push_back(current_lexem);
 		} 
 		Lexem temp = current_lexem;
@@ -176,7 +180,6 @@ void Parser::simple_expression(){
 	else if(cur_type==LEX_LPAREN){
 		get_lexem();
 		expression();
-		check_op();
 		if(cur_type==LEX_RPAREN){
 			get_lexem();
 		}
@@ -198,10 +201,8 @@ void Parser::infix(){
 	   cur_type==LEX_TEQ || cur_type==LEX_LSS || cur_type==LEX_GTR ||\
 	   cur_type==LEX_LEQ || cur_type==LEX_NEQ || cur_type==LEX_GEQ ||\
 	   cur_type==LEX_AND || cur_type==LEX_OR){
-        st_lex.push( cur_type ); // push operation to stack
 		get_lexem();
 		expression();
-		check_op();
 	}
 	else if(cur_type==LEX_RPAREN || cur_type==LEX_SEMICOLON || cur_type==LEX_FUNCTION || \
 			cur_type==LEX_FOR || cur_type==LEX_DO || cur_type==LEX_WHILE || cur_type == LEX_IF){
@@ -216,17 +217,16 @@ void Parser::var_definition(){
     st_int.reset();
 	if(cur_type==LEX_ID){
 		st_int.push ( cur_value );
-        dec ( LEX_VAR );
-		check_id();
 		Poliz.push_back(Lexem(POLIZ_ADDRESS,cur_value));
 		get_lexem();
 		if(cur_type==LEX_EQ){
 			get_lexem();
+			dec( cur_type );
 			expression();
-			eq_type();
 			Poliz.push_back(Lexem(LEX_EQ));
 		}
 		else if(cur_type==LEX_SEMICOLON){
+            dec( LEX_NULL );
 			get_lexem();
 			return;
 		}
@@ -235,14 +235,12 @@ void Parser::var_definition(){
 				get_lexem();
 				if(cur_type==LEX_ID){
                     st_int.push ( cur_value );
-        			dec ( LEX_VAR );
-					check_id();
 					Poliz.push_back(Lexem(POLIZ_ADDRESS,cur_value));
 					get_lexem();
 					if(cur_type==LEX_EQ){
 						get_lexem();
+						dec( cur_type );
 						simple_expression();
-						eq_type();
 						Poliz.push_back(Lexem(LEX_EQ));
 					}
 				}
@@ -265,7 +263,7 @@ void Parser::condition(){
 	if(cur_type==LEX_LPAREN){
 		get_lexem();
 		expression();
-		// eq_bool();
+		eq_bool();
 		if(cur_type==LEX_RPAREN){
 			get_lexem();
 			operat();
@@ -292,7 +290,7 @@ void Parser::cycle(){
 			}
 			get_lexem();
 			expression();
-			// eq_bool();
+			eq_bool();
 			if(cur_type!=LEX_SEMICOLON){
 				throw error_msg(string("';' expected\n"),current_lexem);
 			}
@@ -321,7 +319,7 @@ void Parser::cycle(){
 			if(cur_type==LEX_LPAREN){
 				get_lexem();
 				expression();
-				// eq_bool();
+				eq_bool();
 				if(cur_type==LEX_RPAREN){
 					get_lexem();
 					if(cur_type==LEX_SEMICOLON){
@@ -350,7 +348,7 @@ void Parser::cycle(){
 		if(cur_type==LEX_LPAREN){
 			get_lexem();
 			expression();
-			// eq_bool();
+			eq_bool();
 			if(cur_type==LEX_RPAREN){
 				get_lexem();
 				operat();
