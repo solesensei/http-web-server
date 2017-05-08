@@ -9,6 +9,7 @@ using namespace std;
 // this vector stores gaps to fill in Poliz
 
 vector <int> spaces;
+vector <Lexem> operations;
 
 
 void Parser::analyze(){
@@ -138,15 +139,18 @@ void Parser::block(){
 }
 
 void Parser::expression(){
-	//add postfix
 	prefix();
 	simple_expression();
 	infix();
+	while(!operations.empty()){
+		Poliz.push_back(operations.back());
+		operations.pop_back();
+	}
 }
 
 void Parser::prefix(){
 	if(cur_type==LEX_MINUS || cur_type == LEX_PLUS){
-		/* Here uno MINUS and PLUS */
+		// Here uno MINUS and PLUS 
         if (cur_type == LEX_MINUS){
 			get_lexem();
 			if (cur_type != LEX_NUM)
@@ -167,17 +171,18 @@ void Parser::simple_expression(){
 	if(cur_type==LEX_ID || cur_type == LEX_NUM || cur_type == LEX_STRING){
         if (cur_type == LEX_ID){
         	check_id();
-        	//Poliz.push_back(current_lexem);
         }
 		else{ 
 			st_lex.push( cur_type );
 			dec ( cur_type );
-			//Poliz.push_back(current_lexem);
 		} 
 		Lexem temp = current_lexem;
 		get_lexem();
 		if(cur_type==LEX_EQ){
 			Poliz.push_back(Lexem(POLIZ_ADDRESS,temp.get_value()));
+			get_lexem();
+			expression();
+			Poliz.push_back(Lexem(LEX_EQ));
 		}
 		else{
 			Poliz.push_back(temp);
@@ -199,27 +204,97 @@ void Parser::simple_expression(){
 	else{
 		throw error_msg(string("';' expected\n"),current_lexem);
 	}
+
+
 }
 
+
+
 void Parser::infix(){
-	if(cur_type==LEX_PLUS || cur_type==LEX_MINUS || cur_type==LEX_TIMES ||\
-	   cur_type==LEX_SLASH || cur_type==LEX_EQ || cur_type==LEX_DEQ || \
-	   cur_type==LEX_TEQ || cur_type==LEX_LSS || cur_type==LEX_GTR ||\
-	   cur_type==LEX_LEQ || cur_type==LEX_NEQ || cur_type==LEX_GEQ ||\
-	   cur_type==LEX_AND || cur_type==LEX_OR){
-	   	Lexem temp = current_lexem;
+	if(cur_type==LEX_OR){
+		if(!operations.empty()){
+			while(operations.back().get_type()==LEX_TIMES || operations.back().get_type()==LEX_SLASH ||\
+				  operations.back().get_type()==LEX_PLUS || operations.back().get_type()==LEX_MINUS ||\
+				  operations.back().get_type()==LEX_DEQ || operations.back().get_type()==LEX_TEQ || \
+				  operations.back().get_type()==LEX_LSS || operations.back().get_type()==LEX_LEQ || \
+				  operations.back().get_type()==LEX_GTR || operations.back().get_type()==LEX_GEQ || \
+				  operations.back().get_type()==LEX_NEQ || operations.back().get_type()==LEX_AND || \
+				  operations.back().get_type()==LEX_OR){
+				Poliz.push_back(operations.back());
+				operations.pop_back();
+			}
+		}
+		operations.push_back(current_lexem);
 		get_lexem();
 		expression();
-		Poliz.push_back(temp);
 	}
-	else if(cur_type==LEX_RPAREN || cur_type==LEX_SEMICOLON || cur_type==LEX_FUNCTION || \
-			cur_type==LEX_FOR || cur_type==LEX_DO || cur_type==LEX_WHILE || cur_type == LEX_IF){
+	else if(cur_type==LEX_AND){
+
+	   	if(!operations.empty()){
+			while(operations.back().get_type()==LEX_TIMES || operations.back().get_type()==LEX_SLASH ||\
+				  operations.back().get_type()==LEX_PLUS || operations.back().get_type()==LEX_MINUS ||\
+				  operations.back().get_type()==LEX_DEQ || operations.back().get_type()==LEX_TEQ || \
+				  operations.back().get_type()==LEX_LSS || operations.back().get_type()==LEX_LEQ || \
+				  operations.back().get_type()==LEX_GTR || operations.back().get_type()==LEX_GEQ || \
+				  operations.back().get_type()==LEX_NEQ || operations.back().get_type()==LEX_AND){
+				Poliz.push_back(operations.back());
+				operations.pop_back();
+			}
+		}
+		operations.push_back(current_lexem);
+		get_lexem();
+		expression();
+	}
+	else if(cur_type==LEX_DEQ ||cur_type==LEX_TEQ || cur_type==LEX_LSS ||\
+		cur_type==LEX_GTR ||cur_type==LEX_LEQ || cur_type==LEX_NEQ ||\
+		cur_type==LEX_GEQ){
+
+	  	if(!operations.empty()){
+			while(operations.back().get_type()==LEX_TIMES || operations.back().get_type()==LEX_SLASH ||\
+				  operations.back().get_type()==LEX_PLUS || operations.back().get_type()==LEX_MINUS ||\
+				  operations.back().get_type()==LEX_DEQ || operations.back().get_type()==LEX_TEQ || \
+				  operations.back().get_type()==LEX_LSS || operations.back().get_type()==LEX_LEQ || \
+				  operations.back().get_type()==LEX_GTR || operations.back().get_type()==LEX_GEQ || \
+				  operations.back().get_type()==LEX_NEQ){
+				Poliz.push_back(operations.back());
+				operations.pop_back();
+			}
+		}
+		operations.push_back(current_lexem);
+		get_lexem();
+		expression();
+	}
+	else if(cur_type==LEX_PLUS ||cur_type==LEX_MINUS){
+	   	if(!operations.empty()){
+			while(operations.back().get_type()==LEX_TIMES || operations.back().get_type()==LEX_SLASH ||\
+				  operations.back().get_type()==LEX_PLUS || operations.back().get_type()==LEX_MINUS){
+				Poliz.push_back(operations.back());
+				operations.pop_back();
+			}
+		}
+		operations.push_back(current_lexem);
+		get_lexem();
+		expression();
+	}
+	else if(cur_type==LEX_TIMES ||cur_type==LEX_SLASH){
+	   	if(!operations.empty()){
+			while(operations.back().get_type()==LEX_TIMES || operations.back().get_type()==LEX_SLASH){
+				Poliz.push_back(operations.back());
+				operations.pop_back();
+			}
+		}
+		operations.push_back(current_lexem);
+		get_lexem();
+		expression();
+	}
+	else if(cur_type==LEX_RPAREN || cur_type==LEX_SEMICOLON){
 		return;
 	}
 	else{
 		throw error_msg(string("infix expression expected\n"),current_lexem);
 	}
 }
+
 
 void Parser::var_definition(){
     st_int.reset();

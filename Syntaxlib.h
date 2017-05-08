@@ -63,9 +63,15 @@ class Parser{
 	void simple_expression();
 	void prefix();
 	void infix();
+	/*void infix_superlow();
+	void infix_verylow();
+	void infix_low();
+	void infix_medium();
+	void infix_high();*/
 	void condition();
 	void cycle();
 	void transition();
+
 
 	void dec (type_of_lexem type); //semantic
 	void check_id ();
