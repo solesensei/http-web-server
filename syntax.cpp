@@ -267,8 +267,8 @@ void Parser::condition(){
 		if(cur_type==LEX_RPAREN){
 			get_lexem();
 			operat();
-			get_lexem();
 			if(cur_type==LEX_ELSE){
+				get_lexem();
 				operat();
 			}
 		}
