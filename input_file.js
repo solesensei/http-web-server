@@ -1,5 +1,9 @@
-//Poliz - regular expressions, still bug with z = x = y!
-var x;
-if(x>3 or x<5)
-	x=4;
+//Poliz - hard while
+var x=1;
+var y=1;
+while(x<5){
+	if(x>3){
+		x=6;
+	}
+}
 @

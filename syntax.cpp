@@ -307,6 +307,7 @@ void Parser::var_definition(){
 			dec( cur_type );
 			expression();
 			Poliz.push_back(Lexem(LEX_EQ));
+			Poliz.push_back(Lexem(LEX_SEMICOLON));
 		}
 		else if(cur_type==LEX_SEMICOLON){
             dec( LEX_NULL );
@@ -357,7 +358,6 @@ void Parser::condition(){
 			int p = spaces.back();
 			spaces.pop_back();
 			Poliz[p]=Lexem(LEX_NUM,Poliz.size()+1);
-
 			if(cur_type==LEX_ELSE){
 				get_lexem();
 				operat();
@@ -437,12 +437,23 @@ void Parser::cycle(){
 	else if(cur_type == LEX_WHILE){
 		get_lexem();
 		if(cur_type==LEX_LPAREN){
+			spaces.push_back(Poliz.size()+1);//return number
 			get_lexem();
 			expression();
 			eq_bool();
+			spaces.push_back(Poliz.size());//empty Num
+			Poliz.push_back(Lexem(LEX_NUM,0));
+			Poliz.push_back(POLIZ_FGO);
 			if(cur_type==LEX_RPAREN){
+
 				get_lexem();
 				operat();
+				int p = spaces.back();
+				spaces.pop_back();
+				Poliz[p]=Lexem(LEX_NUM,Poliz.size()+3);
+				Poliz.push_back(Lexem(LEX_NUM,spaces.back()));
+				spaces.pop_back();
+				Poliz.push_back(POLIZ_GO);
 			}
 			else{
 				throw error_msg(string("')' expected\n"),current_lexem);
