@@ -150,10 +150,10 @@ Lexem Scanner::get_lex(int *str_num){
 				current_state = CHAR;
 			}*/
 
-/* COM1 */  else if ( c== '\\')
+/* COM1 */  else if ( c== '/')
 			{
 				get_char ();
-				if (c== '\\')
+				if (c== '/')
 					current_state = COM1;
 				else throw c;
 			}
