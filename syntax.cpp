@@ -352,22 +352,25 @@ void Parser::condition(){
 		spaces.push_back(Poliz.size());
 		Poliz.push_back(Lexem(LEX_NUM,0));
 		Poliz.push_back(POLIZ_FGO);
+		int p;
 		if(cur_type==LEX_RPAREN){
 			get_lexem();
 			operat();
-			int p = spaces.back();
+			p = spaces.back();
 			spaces.pop_back();
-			Poliz[p]=Lexem(LEX_NUM,Poliz.size()+3);
+			
 			if(cur_type==LEX_ELSE){
+				Poliz[p]=Lexem(LEX_NUM,Poliz.size()+3);
 				spaces.push_back(Poliz.size());
 				Poliz.push_back(Lexem(LEX_NUM,0));
 				Poliz.push_back(POLIZ_GO);
 				get_lexem();
 				operat();
-				int p = spaces.back();
+				int h = spaces.back();
 				spaces.pop_back();
-				Poliz[p]=Lexem(LEX_NUM,Poliz.size()+1);
+				Poliz[h]=Lexem(LEX_NUM,Poliz.size()+1);
 			}
+			Poliz[p]=Lexem(LEX_NUM,Poliz.size()+1);
 		}
 		else{
 			error_msg(string("')' expected\n"),current_lexem);
@@ -382,20 +385,48 @@ void Parser::cycle(){
 		if(cur_type==LEX_LPAREN){
 			get_lexem();
 			expression();
+			Poliz.push_back(Lexem(LEX_SEMICOLON));
+			spaces.push_back(Poliz.size()+1);
 			if(cur_type!=LEX_SEMICOLON){
 				throw error_msg(string("';' expected\n"),current_lexem);
 			}
 			get_lexem();
 			expression();
 			eq_bool();
+			spaces.push_back(Poliz.size());
+			Poliz.push_back(Lexem(LEX_NUM,0));
+			Poliz.push_back(POLIZ_FGO);
 			if(cur_type!=LEX_SEMICOLON){
 				throw error_msg(string("';' expected\n"),current_lexem);
 			}
 			get_lexem();
+			spaces.push_back(Poliz.size());
+			Poliz.push_back(Lexem(LEX_NUM,0));
+			Poliz.push_back(POLIZ_GO);
+			spaces.push_back(Poliz.size()+1);
 			expression();
+			Poliz.push_back(Lexem(LEX_SEMICOLON));
+			spaces.push_back(Poliz.size());
+			Poliz.push_back(Lexem(LEX_NUM,0));
+			Poliz.push_back(POLIZ_GO);
 			if(cur_type==LEX_RPAREN){
+				spaces.push_back(Poliz.size()+1);
 				get_lexem();
 				operat();
+				spaces.push_back(Poliz.size());
+				Poliz.push_back(Lexem(LEX_NUM,0));
+				Poliz.push_back(POLIZ_GO);
+				spaces.push_back(Poliz.size()+1);
+
+				//fill the gaps
+				Poliz[spaces[1]]=Lexem(LEX_NUM,spaces[7]);
+				Poliz[spaces[2]]=Lexem(LEX_NUM,spaces[5]);
+				Poliz[spaces[4]]=Lexem(LEX_NUM,spaces[0]);
+				Poliz[spaces[6]]=Lexem(LEX_NUM,spaces[3]);
+
+				while(!spaces.empty()){
+					spaces.pop_back();
+				}
 			}
 			else{
 				throw error_msg(string("')' expected\n"),current_lexem);
