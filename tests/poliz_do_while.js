@@ -1,4 +1,4 @@
-//Poliz - hard while
+//Poliz - hard cycle
 var x=1;
 do{
 	while(x<3)

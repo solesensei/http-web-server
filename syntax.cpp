@@ -410,6 +410,7 @@ void Parser::cycle(){
 	/* do cycle */
 	if(cur_type == LEX_DO){
 		get_lexem();
+		spaces.push_back(Poliz.size()+1);
 		operat();
 		if(cur_type==LEX_WHILE){
 			get_lexem();
@@ -417,6 +418,15 @@ void Parser::cycle(){
 				get_lexem();
 				expression();
 				eq_bool();
+				spaces.push_back(Poliz.size());//empty Num
+				Poliz.push_back(Lexem(LEX_NUM,0));
+				Poliz.push_back(POLIZ_FGO);
+				int p = spaces.back();
+				spaces.pop_back();
+				Poliz[p]=Lexem(LEX_NUM,Poliz.size()+3);
+				Poliz.push_back(Lexem(LEX_NUM,spaces.back()));
+				spaces.pop_back();
+				Poliz.push_back(POLIZ_GO);
 				if(cur_type==LEX_RPAREN){
 					get_lexem();
 					if(cur_type==LEX_SEMICOLON){
