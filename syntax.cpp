@@ -179,7 +179,7 @@ void Parser::prefix(){
 		// Here uno MINUS and PLUS 
         if (cur_type == LEX_MINUS){
 			get_lexem();
-			if (cur_type == LEX_NUM){
+			if (cur_type == LEX_NUM || cur_type == LEX_ID){
 				Poliz.push_back(current_lexem);
 				Poliz.push_back(LEX_UNOMINUS);
 				get_lexem();
@@ -192,23 +192,27 @@ void Parser::prefix(){
 					Poliz.push_back(LEX_UNOMINUS);
 			}
 			else{
-				throw "LEX_NUM expected after uno minus";
+				throw "LEX_NUM or LEX_ID expected after uno minus";
 			}
 
 		}
 		else if(cur_type==LEX_PLUS){
 			get_lexem();
-			if(cur_type== LEX_ID){
-				throw error_msg(string("expression before '='\n"),current_lexem);
+			if(cur_type==LEX_LPAREN){
+				cout << current_lexem << endl;
+				expression();
+				Poliz.push_back(LEX_UNOPLUS);
+
 			}
-			else if(cur_type==LEX_NUM || cur_type==LEX_STRING || cur_type==LEX_BOOL){
+			else if(cur_type==LEX_NUM || cur_type==LEX_STRING || cur_type==LEX_BOOL || LEX_ID){
+				cout << current_lexem << endl;
+				Poliz.push_back(current_lexem);
+				Poliz.push_back(Lexem(LEX_UNOPLUS));
 				get_lexem();
 				if(cur_type==LEX_EQ){
-					throw error_msg(string("assignment to constant!\n"),current_lexem);
+					throw error_msg(string("expression before '=' !\n"),current_lexem);
 				}
 			}
-
-
 		}
 		return;
 	}

@@ -1,4 +1,8 @@
-//Poliz - for cycle
-var x=5;
-x=-(x*3-4);
+//Test number fucking 1000000
+var x;
+var y;
+var z;
+var u=3;
+x=y=z=-u;
+alert(x);
 @
