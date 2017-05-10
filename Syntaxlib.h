@@ -4,6 +4,7 @@
 using namespace std;
 #include "interpretlib.h"	
 #include <vector>
+// #include <stack>
 
 
 template <class T, int max_size > class stack{
@@ -79,6 +80,7 @@ class Parser{
  	int cur_string_number;
  	type_of_lexem cur_type;
  	vector<Lexem> Poliz;
+	vector<type_of_lexem> vc_lex; 
 
 
 	void get_lexem(){
@@ -92,5 +94,11 @@ class Parser{
  		cur_string_number = 1;
  	}
  	void analyze();
+ 
+	void print_vec(vector<type_of_lexem> v) const
+	{
+		for (vector<type_of_lexem>::const_iterator i = v.begin(); i != v.end(); ++i)
+		    	cout << *i << ' ';
+	} 
 };
 #endif

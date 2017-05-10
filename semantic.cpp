@@ -15,6 +15,7 @@ void Parser::dec ( type_of_lexem type ){
         {
             TID[i].set_declare();
             TID[i].set_type(type);
+            vc_lex.push_back(type); //vector of types
         }
     }
 }

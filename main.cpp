@@ -47,6 +47,7 @@ try{
 	}
 	cout << "Syntax - OK\n";
 	cout << "Semantic - OK\n";
+	par.print_vec(par.vc_lex);
 	}
 catch(error_msg er){
 	cout << "Syntax - not OK Line: "<< par.cur_string_number << " Error: " << er.message;
