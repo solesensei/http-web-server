@@ -119,6 +119,14 @@ void Parser::operat(){
 	else if(cur_type==LEX_SEMICOLON){
 		get_lexem();
 	}
+	else if(cur_type==LEX_ALERT){
+		get_lexem();
+		alert();
+	}
+	else if(cur_type==LEX_READ){
+		get_lexem();
+		read();
+	}
 	else if(cur_type==LEX_FIN){
 		return;
 	}
@@ -148,7 +156,7 @@ void Parser::expression(){
 	}
 }
 
-void Parser::prefix(){
+/*void Parser::prefix(){
 	if(cur_type==LEX_MINUS || cur_type == LEX_PLUS){
 		// Here uno MINUS and PLUS 
         if (cur_type == LEX_MINUS){
@@ -157,6 +165,46 @@ void Parser::prefix(){
 				throw "LEX_NUM expected after uno minus"; 
 		}
 		else get_lexem();
+		return;
+	}
+	else if(cur_type==LEX_ID || cur_type == LEX_NUM || cur_type == LEX_STRING || cur_type==LEX_LPAREN){
+		return;
+	}
+	else{
+		throw error_msg(string("prefix expression expected\n"),current_lexem);
+	}
+}*/
+
+void Parser::prefix(){
+	if(cur_type==LEX_MINUS || cur_type == LEX_PLUS){
+		// Here uno MINUS and PLUS 
+        if (cur_type == LEX_MINUS){
+			get_lexem();
+			if (cur_type == LEX_NUM){
+				get_lexem();
+				if(cur_type==LEX_EQ){
+					throw error_msg(string("expression before '='!\n"),current_lexem);
+				}
+			}
+			else{
+				throw "LEX_NUM expected after uno minus";
+			}
+
+		}
+		else if(cur_type==LEX_PLUS){
+			get_lexem();
+			if(cur_type== LEX_ID){
+				throw error_msg(string("expression before '='\n"),current_lexem);
+			}
+			else if(cur_type==LEX_NUM || cur_type==LEX_STRING || cur_type==LEX_BOOL){
+				get_lexem();
+				if(cur_type==LEX_EQ){
+					throw error_msg(string("assignment to constant!\n"),current_lexem);
+				}
+			}
+
+
+		}
 		return;
 	}
 	else if(cur_type==LEX_ID || cur_type == LEX_NUM || cur_type == LEX_STRING || cur_type==LEX_LPAREN){
@@ -177,6 +225,7 @@ void Parser::simple_expression(){
 			dec ( cur_type );
 		} 
 		Lexem temp = current_lexem;
+
 		get_lexem();
 		if(cur_type==LEX_EQ){
 			Poliz.push_back(Lexem(POLIZ_ADDRESS,temp.get_value()));
@@ -544,5 +593,57 @@ void Parser::transition(){
 		else{
 			throw error_msg(string("';' expected\n"),current_lexem);
 		}
+	}
+}
+
+void Parser::alert(){
+	if(cur_type==LEX_LPAREN){
+		get_lexem();
+		expression();
+		Poliz.push_back(Lexem(LEX_ALERT));
+		if(cur_type==LEX_RPAREN){
+			get_lexem();
+			if(cur_type==LEX_SEMICOLON){
+				return;
+			}
+			else{
+				throw error_msg(string("';' expected!\n"),current_lexem);
+			}
+		}
+		else{
+			throw error_msg(string("')' expected!\n"),current_lexem);
+		}
+	}
+	else{
+		throw error_msg(string("'(' expected!\n"),current_lexem);
+	}
+}
+
+void Parser::read(){
+	if(cur_type==LEX_LPAREN){
+		get_lexem();
+		if(cur_type==LEX_ID){
+			Poliz.push_back(Lexem(POLIZ_ADDRESS,cur_value));
+			Poliz.push_back(Lexem(LEX_READ));
+			get_lexem();
+			if(cur_type==LEX_RPAREN){
+				get_lexem();
+				if(cur_type==LEX_SEMICOLON){
+					return;
+				}
+				else{
+					throw error_msg(string("';' expected!\n"),current_lexem);
+				}	
+			}
+			else{
+				throw error_msg(string("')' expected!\n"),current_lexem);
+			}
+		}
+		else{
+			throw error_msg(string("identificator expected!\n"),current_lexem);
+		}
+	}
+	else{
+		throw error_msg(string("'(' expected!\n"),current_lexem);
 	}
 }

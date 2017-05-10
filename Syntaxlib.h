@@ -67,7 +67,8 @@ class Parser{
 	void condition();
 	void cycle();
 	void transition();
-
+	void alert();
+	void read();
 
 	void dec (type_of_lexem type); //semantic
 	void check_id ();
@@ -97,8 +98,10 @@ class Parser{
  
 	void print_vec(vector<type_of_lexem> v) const
 	{
-		for (vector<type_of_lexem>::const_iterator i = v.begin(); i != v.end(); ++i)
+		cout << "variable types: " << endl;
+		for (vector<type_of_lexem>::const_iterator i = v.begin(); i != v.end(); i++)
 		    	cout << *i << ' ';
+		cout << endl << endl;
 	} 
 };
 #endif

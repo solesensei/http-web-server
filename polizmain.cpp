@@ -54,7 +54,7 @@ catch(error_msg er){
 catch(const char* er){
 	cout << "Semantic - not OK Line: " << par.cur_string_number << " Error: " << er << endl;
 	}
-
+	par.print_vec(par.vc_lex);
 	cout << "Poliz:\n";
 	vector<Lexem>::const_iterator t = par.Poliz.begin();
 	if(t==par.Poliz.end()){

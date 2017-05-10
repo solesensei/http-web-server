@@ -70,7 +70,9 @@ enum type_of_lexem{
 	LEX_RBRACE, //58
 	LEX_STRING, //59
 	LEX_UNOMINUS,//60
-	LEX_UNOPLUS //61
+	LEX_UNOPLUS, //61
+	LEX_ALERT,//62
+	LEX_READ//63
 };
 
 
@@ -141,7 +143,7 @@ class table_identificators{
  	int put( const char *buf );
 };
 
-static table_identificators TID(100);
+static table_identificators TID(1000);
 
 
 class Scanner{
