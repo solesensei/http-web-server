@@ -13,7 +13,6 @@ vector <Lexem> operations;
 
 
 void Parser::analyze(){
-	//get_lexem();
 	sentence();
 }
 
@@ -181,10 +180,16 @@ void Parser::prefix(){
         if (cur_type == LEX_MINUS){
 			get_lexem();
 			if (cur_type == LEX_NUM){
+				Poliz.push_back(current_lexem);
+				Poliz.push_back(LEX_UNOMINUS);
 				get_lexem();
 				if(cur_type==LEX_EQ){
 					throw error_msg(string("expression before '='!\n"),current_lexem);
 				}
+			}
+			else if(cur_type==LEX_LPAREN){
+					expression();
+					Poliz.push_back(LEX_UNOMINUS);
 			}
 			else{
 				throw "LEX_NUM expected after uno minus";
@@ -268,7 +273,8 @@ void Parser::infix(){
 				  operations.back().get_type()==LEX_LSS || operations.back().get_type()==LEX_LEQ || \
 				  operations.back().get_type()==LEX_GTR || operations.back().get_type()==LEX_GEQ || \
 				  operations.back().get_type()==LEX_NEQ || operations.back().get_type()==LEX_AND || \
-				  operations.back().get_type()==LEX_OR){
+				  operations.back().get_type()==LEX_OR || operations.back().get_type()==LEX_UNOPLUS|| \
+				  operations.back().get_type()==LEX_UNOMINUS){
 				Poliz.push_back(operations.back());
 				operations.pop_back();
 			}
@@ -285,7 +291,8 @@ void Parser::infix(){
 				  operations.back().get_type()==LEX_DEQ || operations.back().get_type()==LEX_TEQ || \
 				  operations.back().get_type()==LEX_LSS || operations.back().get_type()==LEX_LEQ || \
 				  operations.back().get_type()==LEX_GTR || operations.back().get_type()==LEX_GEQ || \
-				  operations.back().get_type()==LEX_NEQ || operations.back().get_type()==LEX_AND){
+				  operations.back().get_type()==LEX_NEQ || operations.back().get_type()==LEX_AND || \
+				  operations.back().get_type()==LEX_UNOPLUS || operations.back().get_type()==LEX_UNOMINUS){
 				Poliz.push_back(operations.back());
 				operations.pop_back();
 			}
@@ -304,7 +311,8 @@ void Parser::infix(){
 				  operations.back().get_type()==LEX_DEQ || operations.back().get_type()==LEX_TEQ || \
 				  operations.back().get_type()==LEX_LSS || operations.back().get_type()==LEX_LEQ || \
 				  operations.back().get_type()==LEX_GTR || operations.back().get_type()==LEX_GEQ || \
-				  operations.back().get_type()==LEX_NEQ){
+				  operations.back().get_type()==LEX_NEQ || operations.back().get_type()==LEX_UNOPLUS || \
+				  operations.back().get_type()==LEX_UNOMINUS){
 				Poliz.push_back(operations.back());
 				operations.pop_back();
 			}
@@ -316,7 +324,8 @@ void Parser::infix(){
 	else if(cur_type==LEX_PLUS ||cur_type==LEX_MINUS){
 	   	if(!operations.empty()){
 			while(operations.back().get_type()==LEX_TIMES || operations.back().get_type()==LEX_SLASH ||\
-				  operations.back().get_type()==LEX_PLUS || operations.back().get_type()==LEX_MINUS){
+				  operations.back().get_type()==LEX_PLUS || operations.back().get_type()==LEX_MINUS || \
+				  operations.back().get_type()==LEX_UNOPLUS || operations.back().get_type()==LEX_UNOMINUS){
 				Poliz.push_back(operations.back());
 				operations.pop_back();
 			}
@@ -327,7 +336,8 @@ void Parser::infix(){
 	}
 	else if(cur_type==LEX_TIMES ||cur_type==LEX_SLASH){
 	   	if(!operations.empty()){
-			while(operations.back().get_type()==LEX_TIMES || operations.back().get_type()==LEX_SLASH){
+			while(operations.back().get_type()==LEX_TIMES || operations.back().get_type()==LEX_SLASH ||\
+				  operations.back().get_type()==LEX_UNOPLUS || operations.back().get_type()==LEX_UNOMINUS){
 				Poliz.push_back(operations.back());
 				operations.pop_back();
 			}
