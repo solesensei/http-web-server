@@ -6,9 +6,9 @@
 #endif
 
 int main(){
-	vector<string> TS;  // table of strings
+	//vector<string> TS;  // table of strings
 	ofstream out ("output_file");
- try{
+ /*try{
  	int str_k;
 	const char* program = PROG_PATH;
 	Scanner scanner ( program );
@@ -36,7 +36,7 @@ catch(char& c){
  		out << i <<" "<< *p << endl;
  		p++;
  		i++;
- 	}
+ 	}*/
 	 /* syntax + semantic  */
 	Parser par(PROG_PATH);
 try{
@@ -66,6 +66,8 @@ catch(const char* er){
 	}
 
 	cout << endl << endl << "Size: " << par.Poliz.size() << endl;
+
+	cout << par.get_scanner().TS[0] << endl;
 
 	return 0;
 }

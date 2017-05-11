@@ -7,7 +7,7 @@
 
 using namespace std;
 
- 
+
 enum type_of_lexem{
 	LEX_NULL, //0
 	LEX_AND, //1
@@ -154,6 +154,7 @@ class Scanner{
 	static const char *TD[];
 	static type_of_lexem dlms[];
 	//static char* TS[];
+
 	state current_state;
 	FILE *fp;
 	char c;
@@ -185,6 +186,7 @@ class Scanner{
 	}
  public:
 	/* set up tables of identificators */
+	static vector<string> TS;
  	Scanner (const char *program){
 		if( !(fp = fopen(program,"r")) )
 			 throw invalid_argument("no such file");

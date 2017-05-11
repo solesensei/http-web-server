@@ -69,6 +69,7 @@ class Parser{
 	void transition();
 	void alert();
 	void read();
+	void function_call();
 
 	void dec (type_of_lexem type); //semantic
 	void check_id ();
@@ -97,6 +98,9 @@ class Parser{
  		cur_string_number = 1;
  	}
  	void analyze();
+ 	Scanner get_scanner(){
+ 		return scan;
+ 	}
  
 	void print_vec(vector<type_of_lexem> v) const
 	{

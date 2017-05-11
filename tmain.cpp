@@ -6,13 +6,14 @@
 #endif
 
 int main(){
-	vector<string> TS;  // table of strings
+	//vector<string> TS;  // table of strings
 	ofstream out ("output_file");
+	const char* program = PROG_PATH;
+	Scanner scanner ( program );
  try
  {
  	int str_k;
-	const char* program = PROG_PATH;
-	Scanner scanner ( program );
+	
 	Lexem lex;
 	int k = 0;
 	while (lex.get_type() != LEX_FIN)
@@ -33,8 +34,8 @@ catch(char& c)
 	}
 	out << endl << endl;
 	int i=1;
-	vector <string>::const_iterator p = TS.begin();
- 	while(p!=TS.end()){
+	vector <string>::const_iterator p = scanner.TS.begin();
+ 	while(p!=scanner.TS.end()){
  		out << i <<" "<< *p << endl;
  		p++;
  		i++;

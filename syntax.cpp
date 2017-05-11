@@ -90,6 +90,42 @@ void Parser::function(){
 		throw error_msg(string("function name expected\n"),current_lexem);
 	}
 }
+
+void Parser::function_call(){
+	get_lexem();
+	if(cur_type==LEX_LPAREN){
+		get_lexem();
+		/* here check how many arguments, maybe store number in some vector< int > after function() then check here 2 numbers */
+		while((cur_type==LEX_ID || cur_type==LEX_RPAREN) && vc_lex[current_lexem.get_value()]!=LEX_FUNCTION){
+			get_lexem();
+			if(cur_type==LEX_COMMA){
+				get_lexem();
+			}
+			else if(cur_type==LEX_RPAREN){
+				get_lexem();
+				break;
+			}
+			else if(cur_type==LEX_SEMICOLON){
+				break;
+			}
+			else{
+				throw error_msg(string("function call syntax error!\n"),current_lexem);
+			}
+		}
+		if(cur_type==LEX_SEMICOLON){
+			return;
+		}
+		else{
+			throw error_msg(string("';' expected!\n"),current_lexem);
+		}
+
+
+	}
+	else{
+		throw error_msg(string("'(' expected!\n"),current_lexem);
+	}
+}
+
 void Parser::operat(){
 	if(cur_type==LEX_VAR){
 		get_lexem();
@@ -128,6 +164,16 @@ void Parser::operat(){
 	}
 	else if(cur_type==LEX_FIN){
 		return;
+	}
+	else if(cur_type==LEX_ID){
+		if(vc_lex[current_lexem.get_value()-1]==LEX_FUNCTION){
+			function_call();
+		}
+		else{
+			expression();
+			Poliz.push_back(Lexem(LEX_SEMICOLON));
+			get_lexem();
+		}
 	}
 	else{
 		expression();

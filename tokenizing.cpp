@@ -8,7 +8,7 @@
 #include "interpretlib.h"
 
 
-vector<string> TS;
+//vector<string> TS;
 
 int table_identificators::put(const char *buf){
 	for(int j=1; j<top; j++)
@@ -107,6 +107,8 @@ type_of_lexem
 		LEX_LPAREN, LEX_RPAREN, LEX_EQ,LEX_LSS, LEX_GTR, 
 		LEX_PLUS, LEX_MINUS, LEX_TIMES, LEX_SLASH, LEX_LEQ,
 		LEX_NEQ, LEX_GEQ, LEX_DEQ, LEX_TEQ, LEX_STRING, LEX_FIN, LEX_NULL};
+
+vector<string> Scanner::TS;
 
 
 	/* HERE LEX ANALYSATOR BASED ON GRAPH */
