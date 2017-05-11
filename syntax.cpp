@@ -5,7 +5,6 @@
 #include "interpretlib.h"
 using namespace std;
 
-
 // this vector stores gaps to fill in Poliz
 
 vector <int> spaces;
@@ -32,7 +31,8 @@ void Parser::function(){
 		get_lexem();
 		if(cur_type==LEX_LPAREN){
 			get_lexem();
-			st_int.reset();
+            while(!st_int.empty()) // st_int.reset();
+				st_int.pop();
 			if(cur_type==LEX_ID){
 				get_lexem();
 				while(cur_type==LEX_COMMA){
@@ -360,9 +360,10 @@ void Parser::infix(){
 
 
 void Parser::var_definition(){
-    st_int.reset();
+    while(!st_int.empty()) // st_int.reset();
+		   st_int.pop();
 	if(cur_type==LEX_ID){
-		st_int.push ( cur_value );
+		st_int.push( cur_value );
 		Poliz.push_back(Lexem(POLIZ_ADDRESS,cur_value));
 		get_lexem();
 		if(cur_type==LEX_EQ){

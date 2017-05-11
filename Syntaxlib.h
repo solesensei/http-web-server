@@ -4,9 +4,10 @@
 using namespace std;
 #include "interpretlib.h"	
 #include <vector>
-// #include <stack>
+#include <stack>
+#define STL_STACK
 
-
+#ifndef STL_STACK
 template <class T, int max_size > class stack{
 	T s[max_size];
 	int top;
@@ -37,6 +38,7 @@ T stack <T, max_size >::pop(){
 	else
 		throw "Stack_is_empty";
 }	
+#endif
 
 struct error_msg{
 	string message;
@@ -51,8 +53,6 @@ class Parser{
 	Lexem current_lexem;
 	int cur_value;
 	Scanner scan;
-	stack<int,10> st_int;
-	stack<type_of_lexem,10> st_lex;
 
 	//procedures of recursive descent parser//
 	void sentence(); //syntax
@@ -82,6 +82,8 @@ class Parser{
  	type_of_lexem cur_type;
  	vector<Lexem> Poliz;
 	vector<type_of_lexem> vc_lex; 
+	stack <int> st_int;
+	stack <type_of_lexem> st_lex;
 
 
 	void get_lexem(){
