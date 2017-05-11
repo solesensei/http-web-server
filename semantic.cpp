@@ -6,9 +6,10 @@ using namespace std;
 
 void Parser::dec ( type_of_lexem type ){
     int i;
-    while ( !st_int.is_empty()){
-        
-        i = st_int.pop();
+    while ( !st_int.empty()){
+
+        i = st_int.top(); 
+        st_int.pop();
         if ( TID[i].get_declare() )
             throw "twice declaration";
         else
@@ -28,8 +29,9 @@ void Parser::check_id(){
 }
 
 void Parser::eq_bool (){
-    if ( st_lex.pop() == LEX_STRING )
+    if ( st_lex.top() == LEX_STRING )
         throw "expression is not boolean";
+    st_lex.pop();
 }
 
 /*
