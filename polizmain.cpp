@@ -67,7 +67,6 @@ catch(const char* er){
 
 	cout << endl << endl << "Size: " << par.Poliz.size() << endl;
 
-	cout << par.get_scanner().TS[0] << endl;
 
 	return 0;
 }

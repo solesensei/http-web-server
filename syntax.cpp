@@ -8,6 +8,7 @@ using namespace std;
 // this vector stores gaps to fill in Poliz
 
 vector <int> spaces;
+vector <int> values;
 vector <Lexem> operations;
 
 
@@ -496,47 +497,43 @@ void Parser::cycle(){
 			get_lexem();
 			expression();
 			Poliz.push_back(Lexem(LEX_SEMICOLON));
-			spaces.push_back(Poliz.size()+1);
+			int v1=Poliz.size()+1;//value 1
 			if(cur_type!=LEX_SEMICOLON){
 				throw error_msg(string("';' expected\n"),current_lexem);
 			}
 			get_lexem();
 			expression();
 			eq_bool();
-			spaces.push_back(Poliz.size());
-			Poliz.push_back(Lexem(LEX_NUM,0));
+			int s1 = Poliz.size();
+			Poliz.push_back(Lexem(LEX_NUM,0));//space1
 			Poliz.push_back(POLIZ_FGO);
 			if(cur_type!=LEX_SEMICOLON){
 				throw error_msg(string("';' expected\n"),current_lexem);
 			}
 			get_lexem();
-			spaces.push_back(Poliz.size());
-			Poliz.push_back(Lexem(LEX_NUM,0));
+			int s2 = Poliz.size();
+			Poliz.push_back(Lexem(LEX_NUM,0));//space2
 			Poliz.push_back(POLIZ_GO);
-			spaces.push_back(Poliz.size()+1);
+			int v2 =Poliz.size()+1;//value 2
 			expression();
 			Poliz.push_back(Lexem(LEX_SEMICOLON));
-			spaces.push_back(Poliz.size());
-			Poliz.push_back(Lexem(LEX_NUM,0));
+			int s3 = Poliz.size();
+			Poliz.push_back(Lexem(LEX_NUM,0));//space3
 			Poliz.push_back(POLIZ_GO);
 			if(cur_type==LEX_RPAREN){
-				spaces.push_back(Poliz.size()+1);
+				int v3 = Poliz.size()+1;//value3
+				
+				
 				get_lexem();
 				operat();
-				spaces.push_back(Poliz.size());
-				Poliz.push_back(Lexem(LEX_NUM,0));
+				
+				Poliz.push_back(Lexem(LEX_NUM,v2));
 				Poliz.push_back(POLIZ_GO);
-				spaces.push_back(Poliz.size()+1);
+				Poliz[s3]=Lexem(LEX_NUM,v1);
+				Poliz[s2]=Lexem(LEX_NUM,v3);
+				Poliz[s1]=Lexem(LEX_NUM,Poliz.size()+1);
+				
 
-				//fill the gaps
-				Poliz[spaces[1]]=Lexem(LEX_NUM,spaces[7]);
-				Poliz[spaces[2]]=Lexem(LEX_NUM,spaces[5]);
-				Poliz[spaces[4]]=Lexem(LEX_NUM,spaces[0]);
-				Poliz[spaces[6]]=Lexem(LEX_NUM,spaces[3]);
-
-				while(!spaces.empty()){
-					spaces.pop_back();
-				}
 			}
 			else{
 				throw error_msg(string("')' expected\n"),current_lexem);
