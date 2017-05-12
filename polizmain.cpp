@@ -39,20 +39,20 @@ catch(char& c){
  	}*/
 	 /* syntax + semantic  */
 	Parser par(PROG_PATH);
-try{
-	par.get_lexem();
-	par.analyze();
-	while(par.cur_type!=LEX_FIN){
+	try{
+		par.get_lexem();
 		par.analyze();
+		while(par.cur_type!=LEX_FIN){
+			par.analyze();
 	}
-	cout << "Syntax - OK\n";
-	cout << "Semantic - OK\n";
+		cout << "Syntax - OK\n";
+		cout << "Semantic - OK\n";
 	}
-catch(error_msg er){
-	cout << "Syntax - not OK Line: "<< par.cur_string_number << " Error: " << er.message;
+	catch(error_msg er){
+		cout << "Syntax - not OK Line: "<< par.cur_string_number << " Error: " << er.message;
 	}
-catch(const char* er){
-	cout << "Semantic - not OK Line: " << par.cur_string_number << " Error: " << er << endl;
+	catch(const char* er){
+		cout << "Semantic - not OK Line: " << par.cur_string_number << " Error: " << er << endl;
 	}
 	par.print_vec(par.vc_lex);
 	cout << "Poliz:\n";

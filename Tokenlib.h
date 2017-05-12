@@ -121,7 +121,7 @@ class Identificator{
 	void set_type(type_of_lexem t){ type = t; }
 	bool get_assign(){ return assign; }
 	void set_assign(){ assign = true; }
-	int get_balue(){ return value; }
+	int get_value(){ return value; }
 	void set_value(int k){ value = k; }
 };
 

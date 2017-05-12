@@ -461,7 +461,7 @@ void Parser::condition(){
 		expression();
 		eq_bool();
 		spaces.push_back(Poliz.size());
-		Poliz.push_back(Lexem(LEX_NUM,0));
+		Poliz.push_back(Lexem(POLIZ_LABEL,0));
 		Poliz.push_back(POLIZ_FGO);
 		int p;
 		if(cur_type==LEX_RPAREN){
@@ -471,17 +471,17 @@ void Parser::condition(){
 			spaces.pop_back();
 			
 			if(cur_type==LEX_ELSE){
-				Poliz[p]=Lexem(LEX_NUM,Poliz.size()+3);
+				Poliz[p]=Lexem(POLIZ_LABEL,Poliz.size()+3);
 				spaces.push_back(Poliz.size());
-				Poliz.push_back(Lexem(LEX_NUM,0));
+				Poliz.push_back(Lexem(POLIZ_LABEL,0));
 				Poliz.push_back(POLIZ_GO);
 				get_lexem();
 				operat();
 				int h = spaces.back();
 				spaces.pop_back();
-				Poliz[h]=Lexem(LEX_NUM,Poliz.size()+1);
+				Poliz[h]=Lexem(POLIZ_LABEL,Poliz.size()+1);
 			}
-			Poliz[p]=Lexem(LEX_NUM,Poliz.size()+1);
+			Poliz[p]=Lexem(POLIZ_LABEL,Poliz.size()+1);
 		}
 		else{
 			error_msg(string("')' expected\n"),current_lexem);
@@ -505,20 +505,20 @@ void Parser::cycle(){
 			expression();
 			eq_bool();
 			int s1 = Poliz.size();
-			Poliz.push_back(Lexem(LEX_NUM,0));//space1
+			Poliz.push_back(Lexem(POLIZ_LABEL,0));//space1
 			Poliz.push_back(POLIZ_FGO);
 			if(cur_type!=LEX_SEMICOLON){
 				throw error_msg(string("';' expected\n"),current_lexem);
 			}
 			get_lexem();
 			int s2 = Poliz.size();
-			Poliz.push_back(Lexem(LEX_NUM,0));//space2
+			Poliz.push_back(Lexem(POLIZ_LABEL,0));//space2
 			Poliz.push_back(POLIZ_GO);
 			int v2 =Poliz.size()+1;//value 2
 			expression();
 			Poliz.push_back(Lexem(LEX_SEMICOLON));
 			int s3 = Poliz.size();
-			Poliz.push_back(Lexem(LEX_NUM,0));//space3
+			Poliz.push_back(Lexem(POLIZ_LABEL,0));//space3
 			Poliz.push_back(POLIZ_GO);
 			if(cur_type==LEX_RPAREN){
 				int v3 = Poliz.size()+1;//value3
@@ -527,11 +527,11 @@ void Parser::cycle(){
 				get_lexem();
 				operat();
 				
-				Poliz.push_back(Lexem(LEX_NUM,v2));
+				Poliz.push_back(Lexem(POLIZ_LABEL,v2));
 				Poliz.push_back(POLIZ_GO);
-				Poliz[s3]=Lexem(LEX_NUM,v1);
-				Poliz[s2]=Lexem(LEX_NUM,v3);
-				Poliz[s1]=Lexem(LEX_NUM,Poliz.size()+1);
+				Poliz[s3]=Lexem(POLIZ_LABEL,v1);
+				Poliz[s2]=Lexem(POLIZ_LABEL,v3);
+				Poliz[s1]=Lexem(POLIZ_LABEL,Poliz.size()+1);
 				
 
 			}
@@ -557,12 +557,12 @@ void Parser::cycle(){
 				expression();
 				eq_bool();
 				spaces.push_back(Poliz.size());//empty Num
-				Poliz.push_back(Lexem(LEX_NUM,0));
+				Poliz.push_back(Lexem(POLIZ_LABEL,0));
 				Poliz.push_back(POLIZ_FGO);
 				int p = spaces.back();
 				spaces.pop_back();
-				Poliz[p]=Lexem(LEX_NUM,Poliz.size()+3);
-				Poliz.push_back(Lexem(LEX_NUM,spaces.back()));
+				Poliz[p]=Lexem(POLIZ_LABEL,Poliz.size()+3);
+				Poliz.push_back(Lexem(POLIZ_LABEL,spaces.back()));
 				spaces.pop_back();
 				Poliz.push_back(POLIZ_GO);
 				if(cur_type==LEX_RPAREN){
@@ -596,7 +596,7 @@ void Parser::cycle(){
 			expression();
 			eq_bool();
 			spaces.push_back(Poliz.size());//empty Num
-			Poliz.push_back(Lexem(LEX_NUM,0));
+			Poliz.push_back(Lexem(POLIZ_LABEL,0));
 			Poliz.push_back(POLIZ_FGO);
 			if(cur_type==LEX_RPAREN){
 
@@ -604,8 +604,8 @@ void Parser::cycle(){
 				operat();
 				int p = spaces.back();
 				spaces.pop_back();
-				Poliz[p]=Lexem(LEX_NUM,Poliz.size()+3);
-				Poliz.push_back(Lexem(LEX_NUM,spaces.back()));
+				Poliz[p]=Lexem(POLIZ_LABEL,Poliz.size()+3);
+				Poliz.push_back(Lexem(POLIZ_LABEL,spaces.back()));
 				spaces.pop_back();
 				Poliz.push_back(POLIZ_GO);
 			}
