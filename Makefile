@@ -7,6 +7,6 @@ syntax.o:syntax.cpp interpretlib.h
 semantic.o:semantic.cpp interpretlib.h
 	g++ -Wall -g -c semantic.cpp -o semantic.o
 main: main.cpp tokenizing.o syntax.o semantic.o interpretlib.h
-	g++ -std=c++11 -Wall -g main.cpp tokenizing.o syntax.o semantic.o -o main
+	g++ -Wall -g main.cpp tokenizing.o syntax.o semantic.o -o js
 polizmain:polizmain.cpp tokenizing.o syntax.o semantic.o interpretlib.h
 	g++ -Wall -g polizmain.cpp tokenizing.o syntax.o semantic.o -o polizmain

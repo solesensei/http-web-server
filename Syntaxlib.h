@@ -98,6 +98,7 @@ class Parser{
  		cur_string_number = 1;
  	}
  	void analyze();
+ 	
  	Scanner get_scanner(){
  		return scan;
  	}

@@ -1,8 +1,4 @@
 //Test
-var x=5;
-
-alert(x);
-alert("\n");
-
-
+var x;
+x=1;
 @
