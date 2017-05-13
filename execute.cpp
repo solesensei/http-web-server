@@ -215,16 +215,28 @@ void Parser::execute(){
 			}
 			case LEX_READ:{
 				string s;
-				i = args.top().get_value();
-				args.pop();
-				if(TID[i].get_value()==LEX_NULL || TID[i].get_value()==LEX_STRING){
-					cin >> s;
-					scan.TS.push_back(s);
+				int num;
 
-					TID[i].set_value(scan.TS.size());
-					TID[i].set_assign();
-					break;
+				if(args.top().get_type()==POLIZ_ADDRESS){
+					i = args.top().get_value();
+					args.pop();
+					if(TID[i].get_type()==LEX_NULL || TID[i].get_type()==LEX_STRING){
+						cin >> s;
+						scan.TS.push_back(s);
+						TID[i].set_value(scan.TS.size());
+						TID[i].set_assign();
+					}
+					else if(TID[i].get_type()==LEX_NUM){
+						cin >> num;
+						TID[i].set_value(num);
+						TID[i].set_assign();
+					}
 				}
+				else{
+					cout << args.top() << endl;
+					throw "Not id in read!\n";
+				}
+				break;
 			}
 			case LEX_MINUS:{
 				i=cur_poliz_lexem.get_value();

@@ -458,7 +458,7 @@ void Parser::condition(){
 			operat();
 			p = spaces.back();
 			spaces.pop_back();
-			
+			Poliz[p]=Lexem(POLIZ_LABEL,Poliz.size()+1);
 			if(cur_type==LEX_ELSE){
 				Poliz[p]=Lexem(POLIZ_LABEL,Poliz.size()+3);
 				spaces.push_back(Poliz.size());
@@ -470,7 +470,6 @@ void Parser::condition(){
 				spaces.pop_back();
 				Poliz[h]=Lexem(POLIZ_LABEL,Poliz.size()+1);
 			}
-			Poliz[p]=Lexem(POLIZ_LABEL,Poliz.size()+1);
 		}
 		else{
 			error_msg(string("')' expected\n"),current_lexem);
