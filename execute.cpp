@@ -170,7 +170,9 @@ void Parser::execute(){
 
 
 			case POLIZ_GO:{
-				index=args.top().get_value()-1;
+				//cout << index << endl;
+				index=args.top().get_value()-2;
+				//cout << index << endl;
 				args.pop();
 				break;
 			}
@@ -179,9 +181,12 @@ void Parser::execute(){
 				args.pop();
 				Lexem temp = args.top();
 				args.pop();
-				if(temp.get_value()){
-					index=i-1;
+				if(!temp.get_value()){
+					//cout << index << endl;
+					index=i-2;
+					//cout << index << endl;
 				}
+				break;
 			}
 			case LEX_ALERT:{
 				res1 = args.top();
