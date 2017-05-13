@@ -1,10 +1,5 @@
 //Test
-var sum = 0;
-var i=0;
-var j=0;
-var cur=1;
-var next=2;
-var temp;
+var sum = 0,i=0,j=0,cur=1,next=2,temp;
 
 alert("Input Fibonacci number: ");
 read(i);

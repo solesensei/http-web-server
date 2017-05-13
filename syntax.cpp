@@ -386,7 +386,7 @@ void Parser::infix(){
 		get_lexem();
 		expression();
 	}
-	else if(cur_type==LEX_RPAREN || cur_type==LEX_SEMICOLON){
+	else if(cur_type==LEX_RPAREN || cur_type==LEX_SEMICOLON ||cur_type==LEX_COMMA){
 		return;
 	}
 	else{
