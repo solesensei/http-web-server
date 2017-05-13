@@ -202,25 +202,6 @@ void Parser::expression(){
 	}
 }
 
-/*void Parser::prefix(){
-	if(cur_type==LEX_MINUS || cur_type == LEX_PLUS){
-		// Here uno MINUS and PLUS 
-        if (cur_type == LEX_MINUS){
-			get_lexem();
-			if (cur_type != LEX_NUM)
-				throw "LEX_NUM expected after uno minus"; 
-		}
-		else get_lexem();
-		return;
-	}
-	else if(cur_type==LEX_ID || cur_type == LEX_NUM || cur_type == LEX_STRING || cur_type==LEX_LPAREN){
-		return;
-	}
-	else{
-		throw error_msg(string("prefix expression expected\n"),current_lexem);
-	}
-}*/
-
 void Parser::prefix(){
 	if(cur_type==LEX_MINUS || cur_type == LEX_PLUS){
 		// Here uno MINUS and PLUS 
@@ -248,7 +229,6 @@ void Parser::prefix(){
 			if(cur_type==LEX_LPAREN){
 				expression();
 				Poliz.push_back(LEX_UNOPLUS);
-
 			}
 			else if(cur_type==LEX_NUM || cur_type==LEX_STRING || cur_type==LEX_BOOL || LEX_ID){
 				Poliz.push_back(current_lexem);
@@ -309,7 +289,10 @@ void Parser::simple_expression(){
 			throw error_msg(string("')' expected\n"),current_lexem);
 		}
 	}
-	else if(cur_type==LEX_SEMICOLON){
+	else if(cur_type==LEX_SEMICOLON || cur_type==LEX_RPAREN){
+		return;
+	}
+	else if(cur_type==LEX_PLUS || cur_type==LEX_MINUS){
 		return;
 	}
 	else{
