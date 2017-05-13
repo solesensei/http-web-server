@@ -1,47 +1,54 @@
 #include <iostream>
-#include <sstream>
 #include <fstream>
-#include <stack>
+#include <sstream>
 #include <cstdlib>
+#include <string>
+#include <vector>
 #include "interpretlib.h"
-#ifndef PROG_PATH
-#define PROG_PATH "./input_file.js" 
-#endif
-
 using namespace std;
 
-class Interpretator{
-	Lexem cur_poliz_lexem;
-	Parser parser;
- public:
- 	Parser get_parser(){
- 		return parser;
- 	}
- 	Interpretator(const char *program):parser(program){}
- 	void execute(vector<Lexem> prog);
- 	void interpretation();
-};
 
-
-
-void Interpretator::execute(vector<Lexem> prog){
+void Parser::interpretation(){
+	get_lexem();
+	analyze();
+	while(cur_type!=LEX_FIN){
+		analyze();
+	}
+	execute();
+}
+void Parser::execute(){
 	stack <Lexem> args;
 	//int start_point=0; // change start_point to main function l8r
-	int end_point=parser.Poliz.size()-1;
+	int end_point=Poliz.size();
 	int index=0;
 	int i,j;
 	Lexem res1,res2;
 	Lexem not_used;
 	while(index<end_point){
 
-		cur_poliz_lexem=parser.Poliz[index];
+		cur_poliz_lexem=Poliz[index];
+		//cout << cur_poliz_lexem << endl;
 		switch(cur_poliz_lexem.get_type()){
-			case LEX_BOOL:
-			case LEX_NUM:
-			case LEX_STRING:
-			case POLIZ_LABEL:
+			case LEX_BOOL:{
 				args.push(cur_poliz_lexem);
 				break;
+			}
+			case LEX_NUM:{
+				args.push(cur_poliz_lexem);
+				break;
+			}
+			case LEX_STRING:{
+				args.push(cur_poliz_lexem);
+				break;
+			}
+			case POLIZ_ADDRESS:{
+				args.push(cur_poliz_lexem);
+				break;
+			}
+			case POLIZ_LABEL:{
+				args.push(cur_poliz_lexem);
+				break;
+			}
 			case LEX_ID:{
 				i=cur_poliz_lexem.get_value();
 				if(TID[i].get_type()!=LEX_FUNCTION){
@@ -66,11 +73,11 @@ void Interpretator::execute(vector<Lexem> prog){
 					}
 				}
 				else if(res2.get_type()==LEX_NULL || (res2.get_type()==LEX_NUM && res2.get_value()==0) ||\
-				   (res2.get_type()==LEX_STRING && parser.get_scanner().TS[res2.get_value()-1].length()==0)){
+				   (res2.get_type()==LEX_STRING && scan.TS[res2.get_value()-1].length()==0)){
 					res2 = Lexem(LEX_BOOL,0);
 				}
 				else if((res2.get_type()==LEX_NUM && res2.get_value()!=0) ||\
-					    (res2.get_type()==LEX_STRING && parser.get_scanner().TS[res2.get_value()-1].length()>0)){
+					    (res2.get_type()==LEX_STRING && scan.TS[res2.get_value()-1].length()>0)){
 					res2 = Lexem(LEX_BOOL,1);
 				}
 				res1 = args.top();
@@ -86,11 +93,11 @@ void Interpretator::execute(vector<Lexem> prog){
 					}
 				}
 				else if(res1.get_type()==LEX_NULL || (res1.get_type()==LEX_NUM && res1.get_value()==0) ||\
-				   (res1.get_type()==LEX_STRING && parser.get_scanner().TS[res1.get_value()-1].length()==0)){
+				   (res1.get_type()==LEX_STRING && scan.TS[res1.get_value()-1].length()==0)){
 					res1 = Lexem(LEX_BOOL,0);
 				}
 				else if((res1.get_type()==LEX_NUM && res1.get_value()!=0) ||\
-					    (res1.get_type()==LEX_STRING && parser.get_scanner().TS[res1.get_value()-1].length()>0)){
+					    (res1.get_type()==LEX_STRING && scan.TS[res1.get_value()-1].length()>0)){
 					res1 = Lexem(LEX_BOOL,1);
 				}
 				if(res1.get_type()==LEX_BOOL && res2.get_type()==LEX_BOOL){
@@ -116,11 +123,11 @@ void Interpretator::execute(vector<Lexem> prog){
 					}
 				}
 				else if(res2.get_type()==LEX_NULL || (res2.get_type()==LEX_NUM && res2.get_value()==0) ||\
-				   (res2.get_type()==LEX_STRING && parser.get_scanner().TS[res2.get_value()-1].length()==0)){
+				   (res2.get_type()==LEX_STRING && scan.TS[res2.get_value()-1].length()==0)){
 					res2 = Lexem(LEX_BOOL,0);
 				}
 				else if((res2.get_type()==LEX_NUM && res2.get_value()!=0) ||\
-					    (res2.get_type()==LEX_STRING && parser.get_scanner().TS[res2.get_value()-1].length()>0)){
+					    (res2.get_type()==LEX_STRING && scan.TS[res2.get_value()-1].length()>0)){
 					res2 = Lexem(LEX_BOOL,1);
 				}
 				res1 = args.top();
@@ -136,11 +143,11 @@ void Interpretator::execute(vector<Lexem> prog){
 					}
 				}
 				else if(res1.get_type()==LEX_NULL || (res1.get_type()==LEX_NUM && res1.get_value()==0) ||\
-				   (res1.get_type()==LEX_STRING && parser.get_scanner().TS[res1.get_value()-1].length()==0)){
+				   (res1.get_type()==LEX_STRING && scan.TS[res1.get_value()-1].length()==0)){
 					res1 = Lexem(LEX_BOOL,0);
 				}
 				else if((res1.get_type()==LEX_NUM && res1.get_value()!=0) ||\
-					    (res1.get_type()==LEX_STRING && parser.get_scanner().TS[res1.get_value()-1].length()>0)){
+					    (res1.get_type()==LEX_STRING && scan.TS[res1.get_value()-1].length()>0)){
 					res1 = Lexem(LEX_BOOL,1);
 				}
 
@@ -184,14 +191,14 @@ void Interpretator::execute(vector<Lexem> prog){
 					cout << res1.get_value();
 				}
 				else if(res1.get_type()==LEX_STRING){
-					cout << parser.get_scanner().TS[(res1.get_value())-1];
+					cout << scan.TS[(res1.get_value())-1];
 				}
 				else if(res1.get_type()==LEX_ID && TID[i].get_type()!=LEX_FUNCTION){
 					if(TID[i].get_type()==LEX_NUM){
 						cout << TID[i].get_value();
 					}
 					else if(TID[i].get_type()==LEX_STRING){
-						cout << parser.get_scanner().TS[TID[i].get_value()-1];
+						cout << scan.TS[TID[i].get_value()-1];
 					}
 					else if(TID[i].get_type()==LEX_NUM){
 						cout << "Undefined\n";
@@ -207,9 +214,9 @@ void Interpretator::execute(vector<Lexem> prog){
 				args.pop();
 				if(TID[i].get_value()==LEX_NULL || TID[i].get_value()==LEX_STRING){
 					cin >> s;
-					parser.get_scanner().TS.push_back(s);
+					scan.TS.push_back(s);
 
-					TID[i].set_value(parser.get_scanner().TS.size());
+					TID[i].set_value(scan.TS.size());
 					TID[i].set_assign();
 					break;
 				}
@@ -223,14 +230,14 @@ void Interpretator::execute(vector<Lexem> prog){
 						res2 = Lexem(LEX_NUM,TID[i].get_value());
 					}
 					else if(TID[i].get_type()==LEX_STRING){
-						res2=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[TID[i].get_value()-1].c_str()));
+						res2=Lexem(LEX_NUM,atoi(scan.TS[TID[i].get_value()-1].c_str()));
 					}
 					else if(TID[i].get_type()==LEX_NULL){
 						res2=Lexem(LEX_NUM,0);
 					}
 				}
 				else if(res2.get_type()==LEX_STRING){
-					res2=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[i-1].c_str()));
+					res2=Lexem(LEX_NUM,atoi(scan.TS[i-1].c_str()));
 				}
 				else if(res2.get_type()==LEX_BOOL){
 					res2=Lexem(LEX_NUM,res2.get_value());
@@ -247,14 +254,14 @@ void Interpretator::execute(vector<Lexem> prog){
 						}
 					}
 					else if(TID[i].get_type()==LEX_STRING){
-						res1=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[TID[i].get_value()-1].c_str()));
+						res1=Lexem(LEX_NUM,atoi(scan.TS[TID[i].get_value()-1].c_str()));
 					}
 					else if(TID[i].get_type()==LEX_NULL){
 						res1=Lexem(LEX_NUM,0);
 					}
 				}
 				else if(res1.get_type()==LEX_STRING){
-					res1=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[i-1].c_str()));
+					res1=Lexem(LEX_NUM,atoi(scan.TS[i-1].c_str()));
 				}
 				else if(res1.get_type()==LEX_BOOL){
 					res1=Lexem(LEX_NUM,res2.get_value());
@@ -302,7 +309,7 @@ void Interpretator::execute(vector<Lexem> prog){
 							int k = TID[i].get_value();
 							s << k;
 							string converted(s.str());
-							res2=Lexem(LEX_STRING,parser.get_scanner().TS.size());
+							res2=Lexem(LEX_STRING,scan.TS.size());
 						}
 						else{
 							res2=Lexem(LEX_NUM,TID[i].get_value());
@@ -315,8 +322,8 @@ void Interpretator::execute(vector<Lexem> prog){
 							s << k;
 							string converted(s.str());
 
-							parser.get_scanner().TS.push_back(converted);
-							res2=Lexem(LEX_STRING,parser.get_scanner().TS.size());
+							scan.TS.push_back(converted);
+							res2=Lexem(LEX_STRING,scan.TS.size());
 						}
 						else{
 							res2=Lexem(LEX_NUM,TID[i].get_value());
@@ -324,8 +331,8 @@ void Interpretator::execute(vector<Lexem> prog){
 					}
 					else if(TID[i].get_type()==LEX_NULL){
 						if(flag){
-							parser.get_scanner().TS.push_back(string(""));
-							res2=Lexem(LEX_STRING,parser.get_scanner().TS.size());
+							scan.TS.push_back(string(""));
+							res2=Lexem(LEX_STRING,scan.TS.size());
 						}
 						else{
 							res2=Lexem(LEX_NUM,0);
@@ -338,8 +345,8 @@ void Interpretator::execute(vector<Lexem> prog){
 						int k = i;
 						s << k;
 						string converted(s.str());
-						parser.get_scanner().TS.push_back(converted);
-						res2=Lexem(LEX_STRING,parser.get_scanner().TS.size());
+						scan.TS.push_back(converted);
+						res2=Lexem(LEX_STRING,scan.TS.size());
 					}
 					else{
 						res2=Lexem(LEX_NUM,i);
@@ -351,8 +358,8 @@ void Interpretator::execute(vector<Lexem> prog){
 						int k = i;
 						s << k;
 						string converted(s.str());
-						parser.get_scanner().TS.push_back(converted);
-						res2=Lexem(LEX_STRING,parser.get_scanner().TS.size());
+						scan.TS.push_back(converted);
+						res2=Lexem(LEX_STRING,scan.TS.size());
 					}
 				}
 
@@ -363,8 +370,8 @@ void Interpretator::execute(vector<Lexem> prog){
 							int k = TID[j].get_value();
 							s << k;
 							string converted(s.str());
-							parser.get_scanner().TS.push_back(converted);
-							res1=Lexem(LEX_STRING,parser.get_scanner().TS.size());
+							scan.TS.push_back(converted);
+							res1=Lexem(LEX_STRING,scan.TS.size());
 						}
 						else{
 							res1=Lexem(LEX_NUM,TID[j].get_value());
@@ -376,8 +383,8 @@ void Interpretator::execute(vector<Lexem> prog){
 							int k = TID[j].get_value();
 							s << k;
 							string converted(s.str());
-							parser.get_scanner().TS.push_back(converted);
-							res1=Lexem(LEX_STRING,parser.get_scanner().TS.size());
+							scan.TS.push_back(converted);
+							res1=Lexem(LEX_STRING,scan.TS.size());
 						}
 						else{
 							res1=Lexem(LEX_NUM,TID[j].get_value());
@@ -385,8 +392,8 @@ void Interpretator::execute(vector<Lexem> prog){
 					}
 					else if(TID[j].get_type()==LEX_NULL){
 						if(flag){
-							parser.get_scanner().TS.push_back(string(""));
-							res1=Lexem(LEX_STRING,parser.get_scanner().TS.size());
+							scan.TS.push_back(string(""));
+							res1=Lexem(LEX_STRING,scan.TS.size());
 						}
 						else{
 							res1=Lexem(LEX_NUM,0);
@@ -399,8 +406,8 @@ void Interpretator::execute(vector<Lexem> prog){
 						int k = j;
 						s << k;
 						string converted(s.str());
-						parser.get_scanner().TS.push_back(converted);
-						res1=Lexem(LEX_STRING,parser.get_scanner().TS.size());
+						scan.TS.push_back(converted);
+						res1=Lexem(LEX_STRING,scan.TS.size());
 					}
 					else{
 						res2=Lexem(LEX_NUM,j);
@@ -409,19 +416,19 @@ void Interpretator::execute(vector<Lexem> prog){
 				else if(res1.get_type()==LEX_NUM){
 					if(flag){
 						ostringstream s;
-						int k = TID[i].get_value();
+						int k = i;
 						s << k;
 						string converted(s.str());
-						parser.get_scanner().TS.push_back(converted);
-						res1=Lexem(LEX_STRING,parser.get_scanner().TS.size());
+						scan.TS.push_back(converted);
+						res1=Lexem(LEX_STRING,scan.TS.size());
 					}
 				}
 
 
 				if(flag){
 					if(res1.get_type()==LEX_STRING && res2.get_type()==LEX_STRING){
-						parser.get_scanner().TS.push_back(parser.get_scanner().TS[res1.get_value()-1] + parser.get_scanner().TS[res2.get_value()-1]);
-						args.push(Lexem(LEX_STRING,parser.get_scanner().TS.size()));
+						scan.TS.push_back(scan.TS[res2.get_value()-1] + scan.TS[res1.get_value()-1]);
+						args.push(Lexem(LEX_STRING,scan.TS.size()));
 					}
 					else{
 						throw "error";
@@ -429,7 +436,7 @@ void Interpretator::execute(vector<Lexem> prog){
 				}
 				else{
 					if(res1.get_type()==LEX_NUM && res2.get_type()==LEX_NUM){
-						args.push(Lexem(LEX_NUM,res1.get_value()+res2.get_value()));
+						args.push(Lexem(LEX_NUM,res2.get_value()+res1.get_value()));
 					}
 					else{
 						throw "error";
@@ -451,7 +458,7 @@ void Interpretator::execute(vector<Lexem> prog){
 						}
 					}
 					else if(TID[i].get_type()==LEX_STRING){
-						res2=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[i-1].c_str()));
+						res2=Lexem(LEX_NUM,atoi(scan.TS[i-1].c_str()));
 					}
 					else if(TID[i].get_type()==LEX_NULL){
 						res2=Lexem(LEX_NUM,0);
@@ -469,7 +476,7 @@ void Interpretator::execute(vector<Lexem> prog){
 						}
 					}
 					else if(TID[i].get_type()==LEX_STRING){
-						res1=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[i-1].c_str()));
+						res1=Lexem(LEX_NUM,atoi(scan.TS[i-1].c_str()));
 					}
 					else if(TID[i].get_type()==LEX_NULL){
 						res1=Lexem(LEX_NUM,0);
@@ -496,7 +503,7 @@ void Interpretator::execute(vector<Lexem> prog){
 						}
 					}
 					else if(TID[i].get_type()==LEX_STRING){
-						res2=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[i-1].c_str()));
+						res2=Lexem(LEX_NUM,atoi(scan.TS[i-1].c_str()));
 					}
 					else if(TID[i].get_type()==LEX_NULL){
 						res2=Lexem(LEX_NUM,0);
@@ -514,7 +521,7 @@ void Interpretator::execute(vector<Lexem> prog){
 						}
 					}
 					else if(TID[i].get_type()==LEX_STRING){
-						res1=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[i-1].c_str()));
+						res1=Lexem(LEX_NUM,atoi(scan.TS[i-1].c_str()));
 					}
 					else if(TID[i].get_type()==LEX_NULL){
 						res1=Lexem(LEX_NUM,0);
@@ -542,14 +549,14 @@ void Interpretator::execute(vector<Lexem> prog){
 						res2 = Lexem(LEX_NUM,TID[i].get_value());
 					}
 					else if(TID[i].get_type()==LEX_STRING){
-						res2=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[TID[i].get_value()-1].c_str()));
+						res2=Lexem(LEX_NUM,atoi(scan.TS[TID[i].get_value()-1].c_str()));
 					}
 					else if(TID[i].get_type()==LEX_NULL){
 						res2=Lexem(LEX_NUM,0);
 					}
 				}
 				else if(res2.get_type()==LEX_STRING){
-					res2=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[i-1].c_str()));
+					res2=Lexem(LEX_NUM,atoi(scan.TS[i-1].c_str()));
 				}
 				else if(res2.get_type()==LEX_BOOL){
 					res2=Lexem(LEX_NUM,res2.get_value());
@@ -566,14 +573,14 @@ void Interpretator::execute(vector<Lexem> prog){
 						}
 					}
 					else if(TID[i].get_type()==LEX_STRING){
-						res1=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[TID[i].get_value()-1].c_str()));
+						res1=Lexem(LEX_NUM,atoi(scan.TS[TID[i].get_value()-1].c_str()));
 					}
 					else if(TID[i].get_type()==LEX_NULL){
 						res1=Lexem(LEX_NUM,0);
 					}
 				}
 				else if(res1.get_type()==LEX_STRING){
-					res1=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[i-1].c_str()));
+					res1=Lexem(LEX_NUM,atoi(scan.TS[i-1].c_str()));
 				}
 				else if(res1.get_type()==LEX_BOOL){
 					res1=Lexem(LEX_NUM,res2.get_value());
@@ -595,14 +602,14 @@ void Interpretator::execute(vector<Lexem> prog){
 						res2 = Lexem(LEX_NUM,TID[i].get_value());
 					}
 					else if(TID[i].get_type()==LEX_STRING){
-						res2=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[TID[i].get_value()-1].c_str()));
+						res2=Lexem(LEX_NUM,atoi(scan.TS[TID[i].get_value()-1].c_str()));
 					}
 					else if(TID[i].get_type()==LEX_NULL){
 						res2=Lexem(LEX_NUM,0);
 					}
 				}
 				else if(res2.get_type()==LEX_STRING){
-					res2=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[i-1].c_str()));
+					res2=Lexem(LEX_NUM,atoi(scan.TS[i-1].c_str()));
 				}
 				else if(res2.get_type()==LEX_BOOL){
 					res2=Lexem(LEX_NUM,res2.get_value());
@@ -619,14 +626,14 @@ void Interpretator::execute(vector<Lexem> prog){
 						}
 					}
 					else if(TID[i].get_type()==LEX_STRING){
-						res1=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[TID[i].get_value()-1].c_str()));
+						res1=Lexem(LEX_NUM,atoi(scan.TS[TID[i].get_value()-1].c_str()));
 					}
 					else if(TID[i].get_type()==LEX_NULL){
 						res1=Lexem(LEX_NUM,0);
 					}
 				}
 				else if(res1.get_type()==LEX_STRING){
-					res1=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[i-1].c_str()));
+					res1=Lexem(LEX_NUM,atoi(scan.TS[i-1].c_str()));
 				}
 				else if(res1.get_type()==LEX_BOOL){
 					res1=Lexem(LEX_NUM,res2.get_value());
@@ -648,14 +655,14 @@ void Interpretator::execute(vector<Lexem> prog){
 						res2 = Lexem(LEX_NUM,TID[i].get_value());
 					}
 					else if(TID[i].get_type()==LEX_STRING){
-						res2=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[TID[i].get_value()-1].c_str()));
+						res2=Lexem(LEX_NUM,atoi(scan.TS[TID[i].get_value()-1].c_str()));
 					}
 					else if(TID[i].get_type()==LEX_NULL){
 						res2=Lexem(LEX_NUM,0);
 					}
 				}
 				else if(res2.get_type()==LEX_STRING){
-					res2=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[i-1].c_str()));
+					res2=Lexem(LEX_NUM,atoi(scan.TS[i-1].c_str()));
 				}
 				else if(res2.get_type()==LEX_BOOL){
 					res2=Lexem(LEX_NUM,res2.get_value());
@@ -672,14 +679,14 @@ void Interpretator::execute(vector<Lexem> prog){
 						}
 					}
 					else if(TID[i].get_type()==LEX_STRING){
-						res1=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[TID[i].get_value()-1].c_str()));
+						res1=Lexem(LEX_NUM,atoi(scan.TS[TID[i].get_value()-1].c_str()));
 					}
 					else if(TID[i].get_type()==LEX_NULL){
 						res1=Lexem(LEX_NUM,0);
 					}
 				}
 				else if(res1.get_type()==LEX_STRING){
-					res1=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[i-1].c_str()));
+					res1=Lexem(LEX_NUM,atoi(scan.TS[i-1].c_str()));
 				}
 				else if(res1.get_type()==LEX_BOOL){
 					res1=Lexem(LEX_NUM,res2.get_value());
@@ -701,14 +708,14 @@ void Interpretator::execute(vector<Lexem> prog){
 						res2 = Lexem(LEX_NUM,TID[i].get_value());
 					}
 					else if(TID[i].get_type()==LEX_STRING){
-						res2=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[TID[i].get_value()-1].c_str()));
+						res2=Lexem(LEX_NUM,atoi(scan.TS[TID[i].get_value()-1].c_str()));
 					}
 					else if(TID[i].get_type()==LEX_NULL){
 						res2=Lexem(LEX_NUM,0);
 					}
 				}
 				else if(res2.get_type()==LEX_STRING){
-					res2=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[i-1].c_str()));
+					res2=Lexem(LEX_NUM,atoi(scan.TS[i-1].c_str()));
 				}
 				else if(res2.get_type()==LEX_BOOL){
 					res2=Lexem(LEX_NUM,res2.get_value());
@@ -725,14 +732,14 @@ void Interpretator::execute(vector<Lexem> prog){
 						}
 					}
 					else if(TID[i].get_type()==LEX_STRING){
-						res1=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[TID[i].get_value()-1].c_str()));
+						res1=Lexem(LEX_NUM,atoi(scan.TS[TID[i].get_value()-1].c_str()));
 					}
 					else if(TID[i].get_type()==LEX_NULL){
 						res1=Lexem(LEX_NUM,0);
 					}
 				}
 				else if(res1.get_type()==LEX_STRING){
-					res1=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[i-1].c_str()));
+					res1=Lexem(LEX_NUM,atoi(scan.TS[i-1].c_str()));
 				}
 				else if(res1.get_type()==LEX_BOOL){
 					res1=Lexem(LEX_NUM,res2.get_value());
@@ -759,7 +766,7 @@ void Interpretator::execute(vector<Lexem> prog){
 						}
 					}
 					else if(TID[i].get_type()==LEX_STRING){
-						res2=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[i-1].c_str()));
+						res2=Lexem(LEX_NUM,atoi(scan.TS[i-1].c_str()));
 					}
 					else if(TID[i].get_type()==LEX_NULL){
 						res2=Lexem(LEX_NUM,0);
@@ -777,7 +784,7 @@ void Interpretator::execute(vector<Lexem> prog){
 						}
 					}
 					else if(TID[i].get_type()==LEX_STRING){
-						res1=Lexem(LEX_NUM,atoi(parser.get_scanner().TS[i-1].c_str()));
+						res1=Lexem(LEX_NUM,atoi(scan.TS[i-1].c_str()));
 					}
 					else if(TID[i].get_type()==LEX_NULL){
 						res1=Lexem(LEX_NUM,0);
@@ -804,46 +811,12 @@ void Interpretator::execute(vector<Lexem> prog){
 				break;
 			}
 			default:{
+				cout << Poliz[index] << Poliz[index].get_type() <<  endl;
+
 				throw "POLIZ: unexpected elem";
+				break;
 			}
 		}
 		index++;
 	}
-}
-
-
-
-
-
-
-
-int main(){
-	Interpretator I(PROG_PATH);
-	try{
-		I.get_parser().analyze();
- 		while(I.get_parser().cur_type!=LEX_FIN)
-			I.get_parser().analyze();
- 		vector<Lexem>::const_iterator t = I.get_parser().Poliz.begin();
-
-		if(t==I.get_parser().Poliz.end()){
-			cout << "Empty Poliz\n";
-		}
-		while(t!=I.get_parser().Poliz.end()){
-			cout << *t << " ";
-			t++;
-		}
-	}
-	catch(invalid_argument& err){
-		cerr << "Exception catched : " << err.what() << endl;
-	}
-	catch(char& c){
-		cerr << "Exception catched : lex error : " << c << endl;
-	}
-	catch(error_msg er){
-		cout << "Syntax - not OK Line: "<< I.get_parser().cur_string_number << " Error: " << er.message << er.error_lex << endl;
-	}
-	catch(const char* er){
-		cout << "Semantic - not OK Line: " << I.get_parser().cur_string_number << " Error: " << er << endl;
-	}
-	return 0;
 }

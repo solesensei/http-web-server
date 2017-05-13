@@ -196,7 +196,7 @@ void Parser::expression(){
 	prefix();
 	simple_expression();
 	infix();
-	while(!operations.empty()){
+	while(!operations.empty() && operations.back().get_type()!=LEX_LPAREN){
 		Poliz.push_back(operations.back());
 		operations.pop_back();
 	}
@@ -246,13 +246,11 @@ void Parser::prefix(){
 		else if(cur_type==LEX_PLUS){
 			get_lexem();
 			if(cur_type==LEX_LPAREN){
-				cout << current_lexem << endl;
 				expression();
 				Poliz.push_back(LEX_UNOPLUS);
 
 			}
 			else if(cur_type==LEX_NUM || cur_type==LEX_STRING || cur_type==LEX_BOOL || LEX_ID){
-				cout << current_lexem << endl;
 				Poliz.push_back(current_lexem);
 				Poliz.push_back(Lexem(LEX_UNOPLUS));
 				get_lexem();
@@ -294,9 +292,17 @@ void Parser::simple_expression(){
 		}
 	}
 	else if(cur_type==LEX_LPAREN){
+		operations.push_back(current_lexem);
 		get_lexem();
 		expression();
 		if(cur_type==LEX_RPAREN){
+			if(!operations.empty()){
+				while(operations.back().get_type()!=LEX_LPAREN){
+					Poliz.push_back(operations.back());
+					operations.pop_back();
+				}
+				operations.pop_back();
+			}
 			get_lexem();
 		}
 		else{

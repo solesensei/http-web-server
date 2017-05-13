@@ -1,4 +1,5 @@
 //Test
 var x;
-x=1;
+x="Jump ";
+alert(x + " street - " + 3*(4+3));
 @

@@ -51,6 +51,7 @@ struct error_msg{
 
 class Parser{
 	Lexem current_lexem;
+	Lexem cur_poliz_lexem;
 	int cur_value;
 	Scanner scan;
 
@@ -70,13 +71,17 @@ class Parser{
 	void alert();
 	void read();
 	void function_call();
-
-	void dec (type_of_lexem type); //semantic
+	//semantic
+	void dec (type_of_lexem type);
 	void check_id ();
 	void check_op ();
 	void eq_type ();
 	void eq_bool ();
 	// void check_id_in_read ();
+
+	//interpretation
+	
+
 
  public:
  	int cur_string_number;
@@ -98,7 +103,9 @@ class Parser{
  		cur_string_number = 1;
  	}
  	void analyze();
- 	
+ 	void execute();
+ 	void interpretation();
+
  	Scanner get_scanner(){
  		return scan;
  	}
