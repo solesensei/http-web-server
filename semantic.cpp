@@ -21,6 +21,21 @@ void Parser::dec ( type_of_lexem type ){
     }
 }
 
+void Parser::udec ()
+{
+    int i;
+    while( !st_loc.empty() ){
+        
+        i = st_loc.top(); 
+        st_loc.pop();
+        if (i == LEX_FIN ) break; //out of the block
+        if ( !TID[i].get_declare() )
+            throw "try to undeclare undeclared";
+        else
+            TID[i].undeclare();
+    }
+}
+
 void Parser::check_id(){
     if ( TID[cur_value].get_declare() )
         st_lex.push(TID[cur_value].get_type());

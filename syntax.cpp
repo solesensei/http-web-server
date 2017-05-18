@@ -35,12 +35,16 @@ void Parser::function(){
             while(!st_int.empty()) // st_int.reset();
 				st_int.pop();
 			if(cur_type==LEX_ID){
+				st_int.push( cur_value );
+				st_loc.push( cur_value );
+				dec ( LEX_NULL );
 				get_lexem();
 				while(cur_type==LEX_COMMA){
 					get_lexem();
 					if (cur_type==LEX_ID){
-						st_int.push ( cur_value );
-						dec ( LEX_VAR );
+						st_int.push( cur_value );
+						st_loc.push( cur_value );
+						dec( LEX_NULL );
 						get_lexem();
 					}
 					else{
@@ -98,6 +102,7 @@ void Parser::function_call(){
 		get_lexem();
 		/* here check how many arguments, maybe store number in some vector< int > after function() then check here 2 numbers */
 		while((cur_type==LEX_ID || cur_type==LEX_RPAREN) && vc_lex[current_lexem.get_value()]!=LEX_FUNCTION){
+            if(cur_type==LEX_ID) check_id();
 			get_lexem();
 			if(cur_type==LEX_COMMA){
 				get_lexem();
@@ -134,6 +139,7 @@ void Parser::operat(){
 	}
 	else if(cur_type==LEX_LBRACE){
 		get_lexem();
+		st_loc.push( LEX_FIN );
 		block();
 		if(cur_type==LEX_RBRACE){
 			get_lexem();
@@ -169,6 +175,7 @@ void Parser::operat(){
 	else if(cur_type==LEX_ID){
 		if(!vc_lex.empty()){
 			if(vc_lex[current_lexem.get_value()-1]==LEX_FUNCTION){
+				check_id();
 				function_call();
 			}
 			else{
@@ -196,6 +203,7 @@ void Parser::block(){
 			throw error_msg(string("'}' expected\n"),current_lexem);
 		}
 	}
+	udec();
 }
 
 void Parser::expression(){
@@ -402,6 +410,7 @@ void Parser::var_definition(){
 		   st_int.pop();
 	if(cur_type==LEX_ID){
 		st_int.push( cur_value );
+		st_loc.push( cur_value );
 		Poliz.push_back(Lexem(POLIZ_ADDRESS,cur_value));
 		get_lexem();
 		if(cur_type==LEX_EQ){
@@ -421,7 +430,8 @@ void Parser::var_definition(){
 			if(cur_type==LEX_COMMA){
 				get_lexem();
 				if(cur_type==LEX_ID){
-                    st_int.push ( cur_value );
+                    st_int.push( cur_value );
+					st_loc.push( cur_value );
 					Poliz.push_back(Lexem(POLIZ_ADDRESS,cur_value));
 					get_lexem();
 					if(cur_type==LEX_EQ){
@@ -430,6 +440,7 @@ void Parser::var_definition(){
 						simple_expression();
 						Poliz.push_back(Lexem(LEX_EQ));
 					}
+					else dec ( LEX_NULL );
 				}
 				else{
 					throw error_msg(string("variable's name expected\n"),current_lexem);

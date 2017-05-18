@@ -117,6 +117,7 @@ class Identificator{
 	}
 	bool get_declare(){ return declare; }
 	void set_declare(){ declare = true; }
+	void undeclare()  { declare = false; }
 	type_of_lexem get_type(){ return type; }
 	void set_type(type_of_lexem t){ type = t; }
 	bool get_assign(){ return assign; }

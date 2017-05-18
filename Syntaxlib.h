@@ -73,6 +73,7 @@ class Parser{
 	void function_call();
 	//semantic
 	void dec (type_of_lexem type);
+	void udec ();
 	void check_id ();
 	void check_op ();
 	void eq_type ();
@@ -89,6 +90,7 @@ class Parser{
  	vector<Lexem> Poliz;
 	vector<type_of_lexem> vc_lex; 
 	stack <int> st_int;
+	stack <int> st_loc;
 	stack <type_of_lexem> st_lex;
 
 
