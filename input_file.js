@@ -1,4 +1,3 @@
 //Test
-main();
-main();
+alert(2/3);
 @

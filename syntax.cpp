@@ -169,7 +169,7 @@ void Parser::operat(){
 	else if(cur_type==LEX_ID){
 		if(!vc_lex.empty()){
 			if(vc_lex[current_lexem.get_value()-1]==LEX_FUNCTION){
-				function_call();
+				function_call();	
 			}
 			else{
 				expression();
