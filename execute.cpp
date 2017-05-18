@@ -14,10 +14,12 @@ void Parser::interpretation(){
 	while(cur_type!=LEX_FIN){
 		analyze();
 	}
-	//execute();
+	execute();
 }
 void Parser::execute(){
 	stack <Lexem> args;
+	stack <int> function_calls;
+	stack <Lexem> function_values;
 	int end_point=Poliz.size();
 	int index=0;
 	int i,j;
@@ -171,6 +173,10 @@ void Parser::execute(){
 			case POLIZ_GO:{
 				//cout << index << endl;
 				index=args.top().get_value()-2;
+				if(index==-3){
+					index=function_calls.top();
+					function_calls.pop();
+				}
 				//cout << index << endl;
 				args.pop();
 				break;
@@ -875,6 +881,20 @@ void Parser::execute(){
 					}
 				}
 				args.push(res1);
+				break;
+			}
+			case POLIZ_CALL:{
+				int count_id=cur_poliz_lexem.get_value();
+				int old_index = index;
+				index=args.top().get_value()-2;
+				args.pop();
+				count_id--;
+				while(count_id>0){
+					function_values.push(args.top());
+					args.pop();
+					count_id--;
+				}
+				function_calls.push(old_index);
 				break;
 			}
 			default:{

@@ -25,20 +25,27 @@ void Parser::sentence(){
 	}
 }
 void Parser::function(){
+	spaces.push_back(Poliz.size());
+	Poliz.push_back(Lexem(POLIZ_LABEL,0));
+	Poliz.push_back(Lexem(POLIZ_GO,0));
+	int count_id=0;
 	get_lexem();
 	if(cur_type==LEX_ID){
 		st_int.push( cur_value );
 		dec( LEX_FUNCTION );
+		Lexem function_lex=current_lexem;
 		get_lexem();
 		if(cur_type==LEX_LPAREN){
 			get_lexem();
             while(!st_int.empty()) // st_int.reset();
 				st_int.pop();
 			if(cur_type==LEX_ID){
+				count_id++;
 				get_lexem();
 				while(cur_type==LEX_COMMA){
 					get_lexem();
 					if (cur_type==LEX_ID){
+						count_id++;
 						st_int.push ( cur_value );
 						dec ( LEX_VAR );
 						get_lexem();
@@ -48,14 +55,18 @@ void Parser::function(){
 					}
 				}
 				if(cur_type==LEX_RPAREN){
+					TID[function_lex.get_value()].set_value(count_id);
 					get_lexem();
 					get_lexem();
 					if(cur_type==LEX_FIN){
 						throw error_msg("'}' expected\n",current_lexem);
 					}
+					TID[function_lex.get_value()].set_address(Poliz.size()+1);
 					block();
 					if(cur_type==LEX_RBRACE){
 						get_lexem();
+						Poliz[spaces.back()]=Lexem(POLIZ_LABEL,Poliz.size()+1);
+						spaces.pop_back();	
 					}
 					else{
 						throw error_msg(string("'}' expected\n"),current_lexem);
@@ -66,14 +77,20 @@ void Parser::function(){
 				}
 			}
 			else if(cur_type==LEX_RPAREN){
+					TID[function_lex.get_value()].set_value(count_id);
 					get_lexem();
 					get_lexem();
 					if(cur_type==LEX_FIN){
 						throw error_msg("'}' expected\n",current_lexem);
 					}
+					TID[function_lex.get_value()].set_address(Poliz.size()+1);
 					block();
 					if(cur_type==LEX_RBRACE){
 						get_lexem();
+						Poliz.push_back(Lexem(POLIZ_LABEL,-1));
+						Poliz.push_back(Lexem(POLIZ_GO,0));
+						Poliz[spaces.back()]=Lexem(POLIZ_LABEL,Poliz.size()+1);
+						spaces.pop_back();
 					}
 					else{
 						throw error_msg(string("'}' expected\n"),current_lexem);
@@ -93,17 +110,21 @@ void Parser::function(){
 }
 
 void Parser::function_call(){
+	int count_id = TID[current_lexem.get_value()].get_value();
+	int call_address = TID[current_lexem.get_value()].get_address();
+	int call_num =count_id;
 	get_lexem();
 	if(cur_type==LEX_LPAREN){
 		get_lexem();
 		/* here check how many arguments, maybe store number in some vector< int > after function() then check here 2 numbers */
-		while((cur_type==LEX_ID || cur_type==LEX_RPAREN) && vc_lex[current_lexem.get_value()]!=LEX_FUNCTION){
+		while((cur_type==LEX_ID) && TID[current_lexem.get_value()].get_type()!=LEX_FUNCTION){
+			count_id--;
+			Poliz.push_back(current_lexem);
 			get_lexem();
 			if(cur_type==LEX_COMMA){
 				get_lexem();
 			}
 			else if(cur_type==LEX_RPAREN){
-				get_lexem();
 				break;
 			}
 			else if(cur_type==LEX_SEMICOLON){
@@ -112,6 +133,17 @@ void Parser::function_call(){
 			else{
 				throw error_msg(string("function call syntax error!\n"),current_lexem);
 			}
+		}
+		if(cur_type==LEX_RPAREN){
+			get_lexem();
+			Poliz.push_back(Lexem(POLIZ_LABEL,call_address));
+			Poliz.push_back(Lexem(POLIZ_CALL,call_num+1));
+		}
+		else{
+			throw error_msg(string("')' expected!\n"),current_lexem);
+		}
+		if(count_id!=0){
+			throw "function call error: wrong number of parameters\n";
 		}
 		if(cur_type==LEX_SEMICOLON){
 			return;

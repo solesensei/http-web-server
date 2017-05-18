@@ -1,3 +1,9 @@
 //Test
-alert(2/3);
+alert("hello everyone!");
+function hello(){
+	alert("hello");
+}
+hello();
+hello();
+hello();
 @

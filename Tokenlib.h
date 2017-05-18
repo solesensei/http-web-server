@@ -72,7 +72,8 @@ enum type_of_lexem{
 	LEX_UNOMINUS,//60
 	LEX_UNOPLUS, //61
 	LEX_ALERT,//62
-	LEX_READ//63
+	LEX_READ,//63
+	POLIZ_CALL//64
 };
 
 
@@ -89,8 +90,6 @@ class Lexem{
 
  	int get_value(){ return value_lex; }
 
-
-
  	friend ostream& operator<< (ostream &s, Lexem l){
  		s << '(' << l.type_lex << " - " << l.value_lex << "); ";
  		return s;
@@ -105,6 +104,7 @@ class Identificator{
 	type_of_lexem type;
 	bool assign;
 	int value;
+	int address;
  public:
  	Identificator(){
  		declare = false;
@@ -123,6 +123,8 @@ class Identificator{
 	void set_assign(){ assign = true; }
 	int get_value(){ return value; }
 	void set_value(int k){ value = k; }
+	void set_address(int k){ address = k; }
+	int get_address(){ return address; }
 };
 
 class table_identificators{
