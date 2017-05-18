@@ -157,17 +157,14 @@ Lexem Scanner::get_lex(int *str_num){
 
 /* COM1 */  else if ( c== '/')
 			{
+				clear ();
+				add ();
 				get_char ();
 				if (c== '/')
-					current_state = COM1;
-				else throw c;
-			}
-/* COM2 */ 	else if ( c== '/')
-			{
-				get_char();
-				if( c== '*')
-					current_state = COM2;
-				else throw c;
+					 current_state = COM1;
+/* COM2 */		else if (c== '*')
+					 current_state = COM2;
+				else current_state = DELIM;
 			}
 /* = < > */	else if ( c== '=')
 			{
@@ -192,8 +189,11 @@ Lexem Scanner::get_lex(int *str_num){
 				get_char ();
 				current_state = NEQ;
 			}
-			else
+			else{
+                clear ();
+				add ();
 				current_state = DELIM;
+			}
 			break;
 
 /* END OF THE FIRST GRAPGH STAGE */			
@@ -311,8 +311,6 @@ Lexem Scanner::get_lex(int *str_num){
 			break;
 
 		case DELIM:
-			clear ();
-			add ();
 			if ( (j = look(buf, TD)) )
 			{
 				get_char ();
