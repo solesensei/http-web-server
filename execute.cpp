@@ -14,11 +14,10 @@ void Parser::interpretation(){
 	while(cur_type!=LEX_FIN){
 		analyze();
 	}
-	execute();
+	//execute();
 }
 void Parser::execute(){
 	stack <Lexem> args;
-	//int start_point=0; // change start_point to main function l8r
 	int end_point=Poliz.size();
 	int index=0;
 	int i,j;
@@ -199,14 +198,14 @@ void Parser::execute(){
 					cout << scan.TS[(res1.get_value())-1] << endl;
 				}
 				else if(res1.get_type()==LEX_ID && TID[i].get_type()!=LEX_FUNCTION){
-					if(TID[i].get_type()==LEX_NUM){
+					if(TID[i].get_type()==LEX_NUM || TID[i].get_type()==LEX_BOOL){
 						cout << TID[i].get_value() << endl;
 					}
 					else if(TID[i].get_type()==LEX_STRING){
 						cout << scan.TS[TID[i].get_value()-1] << endl;
 					}
 					else if(TID[i].get_type()==LEX_NULL){
-						cout << "Undefined\n" << endl;
+						cout << "Undefined\n";
 					}
 
 				}
@@ -843,6 +842,33 @@ void Parser::execute(){
 					}
 					else if(TID[i].get_type()==LEX_BOOL){
 						res1=Lexem(LEX_NUM,TID[i].get_value());
+					}
+					else if(TID[i].get_type()==LEX_NULL){
+						res1=Lexem(LEX_NUM,0);
+					}
+				}
+				args.push(res1);
+				break;
+			}
+			case LEX_UNOMINUS:{
+				res1 = args.top();
+				args.pop();
+				i=res1.get_value();
+				if(res1.get_type()==LEX_STRING){
+					res1=Lexem(LEX_NUM,-atoi(scan.TS[i-1].c_str()));
+				}
+				else if(res1.get_type()==LEX_BOOL){
+					res1=Lexem(LEX_NUM,-i);
+				}
+				else if(res1.get_type()==LEX_NUM){
+					res1=Lexem(LEX_NUM,-i);
+				}
+				else if(res1.get_type()==LEX_ID && TID[i].get_type()!=LEX_FUNCTION){
+					if(TID[i].get_type()==LEX_STRING){
+						res1=Lexem(LEX_NUM,-atoi(scan.TS[TID[i].get_value()-1].c_str()));
+					}
+					else if(TID[i].get_type()==LEX_BOOL){
+						res1=Lexem(LEX_NUM,-TID[i].get_value());
 					}
 					else if(TID[i].get_type()==LEX_NULL){
 						res1=Lexem(LEX_NUM,0);

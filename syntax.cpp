@@ -167,14 +167,20 @@ void Parser::operat(){
 		return;
 	}
 	else if(cur_type==LEX_ID){
-		if(vc_lex[current_lexem.get_value()-1]==LEX_FUNCTION){
-			function_call();
+		if(!vc_lex.empty()){
+			if(vc_lex[current_lexem.get_value()-1]==LEX_FUNCTION){
+				function_call();
+			}
+			else{
+				expression();
+				Poliz.push_back(Lexem(LEX_SEMICOLON));
+				get_lexem();
+			}
 		}
 		else{
-			expression();
-			Poliz.push_back(Lexem(LEX_SEMICOLON));
-			get_lexem();
+			throw "identificator not defined!\n";
 		}
+		
 	}
 	else{
 		expression();
@@ -207,7 +213,7 @@ void Parser::prefix(){
 		// Here uno MINUS and PLUS 
         if (cur_type == LEX_MINUS){
 			get_lexem();
-			if (cur_type == LEX_NUM || cur_type == LEX_ID){
+			if (cur_type == LEX_NUM || cur_type == LEX_ID || cur_type==LEX_BOOL || cur_type==LEX_STRING){
 				Poliz.push_back(current_lexem);
 				Poliz.push_back(LEX_UNOMINUS);
 				get_lexem();
@@ -219,10 +225,6 @@ void Parser::prefix(){
 					expression();
 					Poliz.push_back(LEX_UNOMINUS);
 			}
-			else{
-				throw "LEX_NUM or LEX_ID expected after uno minus";
-			}
-
 		}
 		else if(cur_type==LEX_PLUS){
 			get_lexem();
