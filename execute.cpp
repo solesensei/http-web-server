@@ -522,6 +522,50 @@ void Parser::execute(){
 				//else error
 				break;
 			}
+			case LEX_SLASH:{
+				i=cur_poliz_lexem.get_value();
+				res2 = args.top();
+				args.pop();
+				if(res2.get_type()==LEX_ID && TID[i].get_type()!=LEX_FUNCTION){
+					if(TID[i].get_type()==LEX_BOOL){
+						if(TID[i].get_value()==1){
+							res2=Lexem(LEX_NUM,1);
+						}
+						else if(TID[i].get_value()==0){
+							res2=Lexem(LEX_NUM,0);
+						}
+					}
+					else if(TID[i].get_type()==LEX_STRING){
+						res2=Lexem(LEX_NUM,atoi(scan.TS[i-1].c_str()));
+					}
+					else if(TID[i].get_type()==LEX_NULL){
+						res2=Lexem(LEX_NUM,0);
+					}
+				}
+				res1 = args.top();
+				args.pop();
+				if(res1.get_type()==LEX_ID && TID[i].get_type()!=LEX_FUNCTION){
+					if(TID[i].get_type()==LEX_BOOL){
+						if(TID[i].get_value()==1){
+							res1=Lexem(LEX_NUM,1);
+						}
+						else if(TID[i].get_value()==0){
+							res1=Lexem(LEX_NUM,0);
+						}
+					}
+					else if(TID[i].get_type()==LEX_STRING){
+						res1=Lexem(LEX_NUM,atoi(scan.TS[i-1].c_str()));
+					}
+					else if(TID[i].get_type()==LEX_NULL){
+						res1=Lexem(LEX_NUM,0);
+					}
+				}
+				if(res1.get_type() == LEX_NUM && res2.get_type() == LEX_NUM){
+					args.push(Lexem(LEX_NUM,res1.get_value()/res2.get_value()));
+				}
+				//else error
+				break;
+			}
 			case LEX_DEQ:{
 				/* string equality */
 				i=cur_poliz_lexem.get_value();
