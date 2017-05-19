@@ -7,4 +7,6 @@ function main(a)
     //  y = 1; 
 }
 var y,a = 2;
+var x;
+alert(x); 
 @

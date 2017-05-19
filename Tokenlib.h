@@ -4,6 +4,7 @@
 #include <cstring>
 #include <vector>
 #include <string>
+#include <stack>
 
 using namespace std;
 
@@ -72,7 +73,8 @@ enum type_of_lexem{
 	LEX_UNOMINUS,//60
 	LEX_UNOPLUS, //61
 	LEX_ALERT,//62
-	LEX_READ//63
+	LEX_READ,//63
+	POLIZ_CALL//64
 };
 
 
@@ -89,8 +91,6 @@ class Lexem{
 
  	int get_value(){ return value_lex; }
 
-
-
  	friend ostream& operator<< (ostream &s, Lexem l){
  		s << '(' << l.type_lex << " - " << l.value_lex << "); ";
  		return s;
@@ -105,11 +105,16 @@ class Identificator{
 	type_of_lexem type;
 	bool assign;
 	int value;
+	int address;
+	bool is_func;
  public:
  	Identificator(){
  		declare = false;
  		assign = false;
+ 		is_func = false;
+
  	}
+ 	stack <int> id_values;
  	char* get_name(){ return name;}
  	void set_name(const char *s){ 
  		name = new char[strlen(s)+1];
@@ -124,6 +129,10 @@ class Identificator{
 	void set_assign(){ assign = true; }
 	int get_value(){ return value; }
 	void set_value(int k){ value = k; }
+	void set_address(int k){ address = k; }
+	int get_address(){ return address; }
+	void set_is_func(){ is_func=true;}
+	bool get_is_func(){return is_func;}
 };
 
 class table_identificators{

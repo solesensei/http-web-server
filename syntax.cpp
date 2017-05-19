@@ -11,6 +11,8 @@ vector <int> spaces;
 vector <int> values;
 vector <Lexem> operations;
 
+bool inside_function = false;
+bool func_check = false;
 
 void Parser::analyze(){
 	sentence();
@@ -25,10 +27,16 @@ void Parser::sentence(){
 	}
 }
 void Parser::function(){
+	spaces.push_back(Poliz.size());
+	Poliz.push_back(Lexem(POLIZ_LABEL,0));
+	Poliz.push_back(Lexem(POLIZ_GO,0));
+	int count_id=0;
 	get_lexem();
 	if(cur_type==LEX_ID){
 		st_int.push( cur_value );
 		dec( LEX_FUNCTION );
+		TID[current_lexem.get_value()].set_type(LEX_FUNCTION);
+		Lexem function_lex=current_lexem;
 		get_lexem();
 		if(cur_type==LEX_LPAREN){
 			get_lexem();
@@ -38,6 +46,8 @@ void Parser::function(){
 				st_int.push( cur_value );
 				st_loc.push( cur_value );
 				dec ( LEX_NULL );
+				count_id++;
+				TID[function_lex.get_value()].id_values.push(current_lexem.get_value());
 				get_lexem();
 				while(cur_type==LEX_COMMA){
 					get_lexem();
@@ -45,6 +55,8 @@ void Parser::function(){
 						st_int.push( cur_value );
 						st_loc.push( cur_value );
 						dec( LEX_NULL );
+						count_id++;
+						TID[function_lex.get_value()].id_values.push(current_lexem.get_value());
 						get_lexem();
 					}
 					else{
@@ -52,14 +64,27 @@ void Parser::function(){
 					}
 				}
 				if(cur_type==LEX_RPAREN){
+					TID[function_lex.get_value()].set_value(count_id);
 					get_lexem();
 					get_lexem();
 					if(cur_type==LEX_FIN){
 						throw error_msg("'}' expected\n",current_lexem);
 					}
+					TID[function_lex.get_value()].set_address(Poliz.size()+1);
+					inside_function=true;
 					block();
+					if(func_check){
+							TID[function_lex.get_value()].set_is_func();
+							Poliz.push_back(Lexem(LEX_RETURN,-1));
+							func_check=false;
+					}
 					if(cur_type==LEX_RBRACE){
 						get_lexem();
+						inside_function=false;
+						Poliz.push_back(Lexem(POLIZ_LABEL,-1));
+						Poliz.push_back(Lexem(POLIZ_GO,0));
+						Poliz[spaces.back()]=Lexem(POLIZ_LABEL,Poliz.size()+1);
+						spaces.pop_back();	
 					}
 					else{
 						throw error_msg(string("'}' expected\n"),current_lexem);
@@ -70,14 +95,27 @@ void Parser::function(){
 				}
 			}
 			else if(cur_type==LEX_RPAREN){
+					TID[function_lex.get_value()].set_value(count_id);
 					get_lexem();
 					get_lexem();
 					if(cur_type==LEX_FIN){
 						throw error_msg("'}' expected\n",current_lexem);
 					}
+					TID[function_lex.get_value()].set_address(Poliz.size()+1);
+					inside_function=true;
 					block();
+					if(func_check){
+							TID[function_lex.get_value()].set_is_func();
+							Poliz.push_back(Lexem(LEX_RETURN,-1));
+							func_check=false;
+					}
 					if(cur_type==LEX_RBRACE){
 						get_lexem();
+						inside_function=false;
+						Poliz.push_back(Lexem(POLIZ_LABEL,-1));
+						Poliz.push_back(Lexem(POLIZ_GO,0));
+						Poliz[spaces.back()]=Lexem(POLIZ_LABEL,Poliz.size()+1);
+						spaces.pop_back();
 					}
 					else{
 						throw error_msg(string("'}' expected\n"),current_lexem);
@@ -97,18 +135,25 @@ void Parser::function(){
 }
 
 void Parser::function_call(){
+	int count_id = TID[current_lexem.get_value()].get_value();
+	bool is_func = TID[current_lexem.get_value()].get_is_func();
+	int call_address = TID[current_lexem.get_value()].get_address();
+	int call_num =count_id;
 	get_lexem();
 	if(cur_type==LEX_LPAREN){
 		get_lexem();
+
 		/* here check how many arguments, maybe store number in some vector< int > after function() then check here 2 numbers */
-		while((cur_type==LEX_ID || cur_type==LEX_RPAREN) && vc_lex[current_lexem.get_value()]!=LEX_FUNCTION){
+		//while((cur_type==LEX_ID || cur_type==LEX_RPAREN) && vc_lex[current_lexem.get_value()]!=LEX_FUNCTION){
+		/*while((cur_type==LEX_ID) && TID[current_lexem.get_value()].get_type()!=LEX_FUNCTION){
             if(cur_type==LEX_ID) check_id();
+			count_id--;
+			Poliz.push_back(current_lexem);
 			get_lexem();
 			if(cur_type==LEX_COMMA){
 				get_lexem();
 			}
 			else if(cur_type==LEX_RPAREN){
-				get_lexem();
 				break;
 			}
 			else if(cur_type==LEX_SEMICOLON){
@@ -117,6 +162,40 @@ void Parser::function_call(){
 			else{
 				throw error_msg(string("function call syntax error!\n"),current_lexem);
 			}
+		}*/
+		if(cur_type==LEX_RPAREN){
+			get_lexem();
+			Poliz.push_back(Lexem(POLIZ_LABEL,call_address));
+			Poliz.push_back(Lexem(POLIZ_CALL,call_num+1));
+			if(is_func){
+				Poliz.push_back(Lexem(LEX_NUM,123));
+			}
+			return;
+		}
+		else{
+			expression();
+			count_id--;
+			while(cur_type==LEX_COMMA){
+				get_lexem();
+				expression();
+				count_id--;
+			}
+			if(cur_type==LEX_RPAREN){
+				get_lexem();
+				//cout << call_address << endl;
+				//cout << call_num << endl;
+				Poliz.push_back(Lexem(POLIZ_LABEL,call_address));
+				Poliz.push_back(Lexem(POLIZ_CALL,call_num+1));
+				if(is_func){
+					Poliz.push_back(Lexem(LEX_NUM,123));
+				}
+			}
+			else{
+				throw error_msg(string("')' expected!\n"),current_lexem);
+			}
+		}
+		if(count_id!=0){
+			throw "function call error: wrong number of parameters\n";
 		}
 		if(cur_type==LEX_SEMICOLON){
 			return;
@@ -221,13 +300,33 @@ void Parser::prefix(){
 		// Here uno MINUS and PLUS 
         if (cur_type == LEX_MINUS){
 			get_lexem();
-			if (cur_type == LEX_NUM || cur_type == LEX_ID || cur_type==LEX_BOOL || cur_type==LEX_STRING){
+			if (cur_type == LEX_NUM || cur_type==LEX_BOOL || cur_type==LEX_STRING){
 				Poliz.push_back(current_lexem);
 				Poliz.push_back(LEX_UNOMINUS);
 				get_lexem();
 				if(cur_type==LEX_EQ){
 					throw error_msg(string("expression before '='!\n"),current_lexem);
 				}
+			}
+			else if(cur_type==LEX_ID){
+				if(TID[current_lexem.get_value()].get_type()!=LEX_FUNCTION){
+					Poliz.push_back(current_lexem);
+					Poliz.push_back(Lexem(LEX_UNOMINUS));
+					get_lexem();
+					if(cur_type==LEX_EQ){
+						throw error_msg(string("expression before '=' !\n"),current_lexem);
+					}
+				}
+				else{
+					if(TID[current_lexem.get_value()].get_is_func()){
+						function_call();
+						Poliz.push_back(LEX_UNOMINUS);
+					}
+					else{
+						throw "void function returns nothing!\n";
+					}
+				}
+
 			}
 			else if(cur_type==LEX_LPAREN){
 					expression();
@@ -240,12 +339,31 @@ void Parser::prefix(){
 				expression();
 				Poliz.push_back(LEX_UNOPLUS);
 			}
-			else if(cur_type==LEX_NUM || cur_type==LEX_STRING || cur_type==LEX_BOOL || LEX_ID){
+			else if(cur_type==LEX_NUM || cur_type==LEX_STRING || cur_type==LEX_BOOL){
 				Poliz.push_back(current_lexem);
 				Poliz.push_back(Lexem(LEX_UNOPLUS));
 				get_lexem();
 				if(cur_type==LEX_EQ){
 					throw error_msg(string("expression before '=' !\n"),current_lexem);
+				}
+			}
+			else if(cur_type==LEX_ID){
+				if(TID[current_lexem.get_value()].get_type()!=LEX_FUNCTION){
+					Poliz.push_back(current_lexem);
+					Poliz.push_back(Lexem(LEX_UNOPLUS));
+					get_lexem();
+					if(cur_type==LEX_EQ){
+						throw error_msg(string("expression before '=' !\n"),current_lexem);
+					}
+				}
+				else{
+					if(TID[current_lexem.get_value()].get_is_func()){
+						function_call();
+						Poliz.push_back(LEX_UNOPLUS);
+					}
+					else{
+						throw "void function returns nothing!\n";
+					}
 				}
 			}
 		}
@@ -260,14 +378,9 @@ void Parser::prefix(){
 }
 
 void Parser::simple_expression(){
-	if(cur_type==LEX_ID || cur_type == LEX_NUM || cur_type == LEX_STRING){
-        if (cur_type == LEX_ID){
-        	check_id();
-        }
-		else{ 
-			st_lex.push( cur_type );
-			dec ( cur_type );
-		} 
+	if(cur_type == LEX_NUM || cur_type == LEX_STRING){
+		st_lex.push( cur_type );
+		dec ( cur_type );
 		Lexem temp = current_lexem;
 
 		get_lexem();
@@ -279,6 +392,28 @@ void Parser::simple_expression(){
 		}
 		else{
 			Poliz.push_back(temp);
+		}
+	}
+	else if(cur_type == LEX_ID && TID[current_lexem.get_value()].get_type()!=LEX_FUNCTION){
+		check_id();
+		Lexem temp = current_lexem;
+		get_lexem();
+		if(cur_type==LEX_EQ){
+			Poliz.push_back(Lexem(POLIZ_ADDRESS,temp.get_value()));
+			get_lexem();
+			expression();
+			Poliz.push_back(Lexem(LEX_EQ));
+		}
+		else{
+			Poliz.push_back(temp);
+		}
+	}
+	else if(cur_type == LEX_ID && TID[current_lexem.get_value()].get_type()==LEX_FUNCTION){
+		if(TID[current_lexem.get_value()].get_is_func()){
+			function_call();
+		}
+		else{
+			throw "Void function returns nothing!\n";
 		}
 	}
 	else if(cur_type==LEX_LPAREN){
@@ -422,6 +557,7 @@ void Parser::var_definition(){
 		}
 		else if(cur_type==LEX_SEMICOLON){
             dec( LEX_NULL );
+            TID[current_lexem.get_value()].set_assign();
             Poliz.pop_back();
 			get_lexem();
 			return;
@@ -644,13 +780,20 @@ void Parser::transition(){
 		}
 	}
 	else if(cur_type==LEX_RETURN){
-		get_lexem();
-		expression();
-		if(cur_type==LEX_SEMICOLON){
+		if(inside_function){
+			func_check=true;
 			get_lexem();
+			expression();
+			if(cur_type==LEX_SEMICOLON){
+				get_lexem();
+
+			}
+			else{
+				throw error_msg(string("';' expected\n"),current_lexem);
+			}
 		}
 		else{
-			throw error_msg(string("';' expected\n"),current_lexem);
+			throw "return not inside a function!\n";
 		}
 	}
 }

@@ -1,14 +1,18 @@
 #include <iostream>
 #include <fstream>
 #include "interpretlib.h"
-#ifndef PROG_PATH
-#define PROG_PATH "./input_file.js" 
-#endif
 
-int main(){
+int main(int argc,char *argv[]){
 	//vector<string> TS;  // table of strings
-	ofstream out ("output_file");
-	Parser par(PROG_PATH);
+	if(argc>2){
+		cout << "Too much arguments!\n";
+		return -1;
+	}
+	else if(argc==1){
+		cout << "Too few arguments!\n";
+		return -1;
+	}
+	Parser par(argv[1]);
 	try{
 		par.interpretation();
 		cout << endl << endl << endl;
