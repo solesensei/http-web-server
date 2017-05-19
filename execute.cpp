@@ -78,7 +78,7 @@ void Parser::execute(){
 					}
 				}
 				else if(res2.get_type()==LEX_NULL || (res2.get_type()==LEX_NUM && res2.get_value()==0) ||\
-				   (res2.get_type()==LEX_STRING && scan.TS[res2.get_value()-1].length()==0)){
+				   (res2.get_type()==LEX_STRING && scan.TS[res2.get_value()-1]=="")){
 					res2 = Lexem(LEX_BOOL,0);
 				}
 				else if((res2.get_type()==LEX_NUM && res2.get_value()!=0) ||\

@@ -1,12 +1,15 @@
 //Test
-{ var x; }
-function main(a)
+function main()
 {
-     var x,y,z;
-    x = x/a;
-    //  y = 1; 
+
 }
-var y,a = 2;
-var x;
-alert(x); 
+var x = "123";
+if (x)
+{
+
+}
+
 @
+ajdjad
+
+ladladla

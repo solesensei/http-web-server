@@ -115,6 +115,7 @@ vector<string> Scanner::TS;
 Lexem Scanner::get_lex(int *str_num){
 
 	int d, j;
+	bool flg_slash = false;
 	current_state = H;
 	do
 	{
@@ -164,7 +165,10 @@ Lexem Scanner::get_lex(int *str_num){
 					 current_state = COM1;
 /* COM2 */		else if (c== '*')
 					 current_state = COM2;
-				else current_state = DELIM;
+				else {
+                     flg_slash = true;
+					 current_state = DELIM;
+				}
 			}
 /* = < > */	else if ( c== '=')
 			{
@@ -313,7 +317,8 @@ Lexem Scanner::get_lex(int *str_num){
 		case DELIM:
 			if ( (j = look(buf, TD)) )
 			{
-				get_char ();
+				if ( !flg_slash ) get_char ();
+				else flg_slash = false;
 				return Lexem (dlms[j], j );
 			}
 			else // ERROR

@@ -384,15 +384,7 @@ void Parser::simple_expression(){
 		Lexem temp = current_lexem;
 
 		get_lexem();
-		if(cur_type==LEX_EQ){
-			Poliz.push_back(Lexem(POLIZ_ADDRESS,temp.get_value()));
-			get_lexem();
-			expression();
-			Poliz.push_back(Lexem(LEX_EQ));
-		}
-		else{
-			Poliz.push_back(temp);
-		}
+		Poliz.push_back(temp);
 	}
 	else if(cur_type == LEX_ID && TID[current_lexem.get_value()].get_type()!=LEX_FUNCTION){
 		check_id();
