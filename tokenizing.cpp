@@ -146,7 +146,7 @@ Lexem Scanner::get_lex(int *str_num){
 			else if (c== '\"') //|| c== '\'') 
 			{
 				/* After spaces only works*/
-
+				clear();
 				get_char();	
 				current_state = STRING; //need to add new state 
 			}
@@ -327,7 +327,7 @@ Lexem Scanner::get_lex(int *str_num){
 		case STRING:{
 			
 			if(c=='\"'){
-				string str(buf+1);
+				string str(buf);
 				add();
 				get_char();
 				TS.push_back(str);

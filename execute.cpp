@@ -51,10 +51,14 @@ void Parser::execute(){
 				break;
 			}
 			case LEX_ID:{
+				//cout << "hi" << endl;
 				i=cur_poliz_lexem.get_value();
 				if(TID[i].get_type()!=LEX_FUNCTION){
 					if(TID[i].get_assign()){
 						args.push(Lexem(TID[i].get_type(),TID[i].get_value()));
+					}
+					else if(TID[i].get_type()==LEX_NULL){
+						args.push(Lexem(LEX_NULL,TID[i].get_value()));
 					}
 				}
 				break;
@@ -168,7 +172,12 @@ void Parser::execute(){
 				args.pop();
 				break;
 			}
-
+			case LEX_RETURN:{
+				res1 = args.top();
+				args.pop();
+				Poliz[function_calls.top()+1]=res1;
+				break;
+			}
 
 			case POLIZ_GO:{
 				//cout << index << endl;
@@ -202,6 +211,9 @@ void Parser::execute(){
 				}
 				else if(res1.get_type()==LEX_STRING){
 					cout << scan.TS[(res1.get_value())-1] << endl;
+				}
+				else if(res1.get_type()==LEX_NULL){
+					cout << "Undefined\n";
 				}
 				else if(res1.get_type()==LEX_ID && TID[i].get_type()!=LEX_FUNCTION){
 					if(TID[i].get_type()==LEX_NUM || TID[i].get_type()==LEX_BOOL){
@@ -364,20 +376,20 @@ void Parser::execute(){
 				else if(res2.get_type()==LEX_BOOL){
 					if(flag){
 						ostringstream s;
-						int k = i;
+						int k = j;
 						s << k;
 						string converted(s.str());
 						scan.TS.push_back(converted);
 						res2=Lexem(LEX_STRING,scan.TS.size());
 					}
 					else{
-						res2=Lexem(LEX_NUM,i);
+						res2=Lexem(LEX_NUM,j);
 					}
 				}
 				else if(res2.get_type()==LEX_NUM){
 					if(flag){
 						ostringstream s;
-						int k = i;
+						int k = j;
 						s << k;
 						string converted(s.str());
 						scan.TS.push_back(converted);
@@ -425,14 +437,14 @@ void Parser::execute(){
 				else if(res1.get_type()==LEX_BOOL){
 					if(flag){
 						ostringstream s;
-						int k = j;
+						int k = i;
 						s << k;
 						string converted(s.str());
 						scan.TS.push_back(converted);
 						res1=Lexem(LEX_STRING,scan.TS.size());
 					}
 					else{
-						res2=Lexem(LEX_NUM,j);
+						res1=Lexem(LEX_NUM,i);
 					}
 				}
 				else if(res1.get_type()==LEX_NUM){
