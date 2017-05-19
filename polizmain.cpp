@@ -19,8 +19,8 @@ int main(int argc,char *argv[]){
 		cout << "Syntax - OK\n";
 		cout << "Semantic - OK\n";
 	}
-	catch (char){
-		cout << "Lex error " << endl;
+	catch (char c){
+		cout << "Lex error - unexpected char: " << c << endl;
 	}	
 	catch(error_msg er){
 		cout << "Syntax - not OK Line: "<< par.cur_string_number << " Error: " << er.message << er.error_lex << endl;
