@@ -42,6 +42,7 @@ void Parser::function(){
 			get_lexem();
             while(!st_int.empty()) // st_int.reset();
 				st_int.pop();
+			st_loc.push( LEX_FIN );
 			if(cur_type==LEX_ID){
 				st_int.push( cur_value );
 				st_loc.push( cur_value );
