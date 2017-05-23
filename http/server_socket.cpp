@@ -272,7 +272,7 @@ void MyServerSocket_select::run()
     IOSocket_select *clients_sockets[512];
     int num_clients = 0;
     
-    cout << "Server is running..." << endl;  	
+    cerr << "Server is running..." << endl;  	
     for (;;)
     {
         // fill set of sockets
@@ -412,7 +412,7 @@ void MyServerSocket_select::run()
                     {
                         char file_size[20];
                         struct stat file_info;
-                        int file_descriptor = ::open("./program_error.html", O_RDONLY);
+                        int file_descriptor = ::open("./http/data/program_error.html", O_RDONLY);
                         fstat(file_descriptor, &file_info);
                         sprintf(file_size, "%ld", file_info.st_size);
                         clients_sockets[i] -> body_size = file_info.st_size;
@@ -442,7 +442,7 @@ int MyServerSocket_select::accept()
     return new_socket_sd;
 }
 ///-------------------------------------fix this
- /*void RunCgi (Response * resp, char * filename, int * fd, char * args, BaseSocket * comSock) {
+ /*void run_cgi (char * filename, int * fd, char * args, BaseSocket * comSock) {
         int pid;
 
         if ( (pid = fork() ) == 0) {  //сын

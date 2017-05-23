@@ -35,8 +35,8 @@ int MyServerSocket_select::on_accept(IOSocket_select *pSocket)
 
     if (!strcmp(part_buffer, "/"))
     {
-        file_descriptor = ::open("./index.html", O_RDONLY);
-        strcpy(file_name, "./index.html");
+        file_descriptor = ::open("./http/data/index.html", O_RDONLY);
+        strcpy(file_name, "./http/data/index.html");
         args = NULL;
     }
     else
@@ -62,22 +62,23 @@ int MyServerSocket_select::on_accept(IOSocket_select *pSocket)
     
     if (file_descriptor >= 0)
     {
+        cerr << "here" << endl;
         content_type = get_content_type(file_name + 1);
         fstat(file_descriptor, &file_info);
-        if (file_info.st_mode & S_IXUSR && !S_ISDIR(file_info.st_mode))// if file is program
+        /* if (file_info.st_mode & S_IXUSR && !S_ISDIR(file_info.st_mode))// if file is program
         {
             request_type = 3;// cgi
             pSocket -> cgihandler = new CGIHandler();
 
-            /*need to add run_cgi */
+            //need to add run_cgi
             //pSocket -> cgihandler -> run_cgi(file_name + 1, args);// firts symbol '.'
             return request_type;
         }
-
+        */
         if (content_type == 0)
         {
             ::close(file_descriptor);
-            file_descriptor = ::open("./forbidden.html", O_RDONLY);
+            file_descriptor = ::open("./http/data/forbidden.html", O_RDONLY);
         }
         fstat(file_descriptor, &file_info);
         sprintf(file_size, "%ld", file_info.st_size);
@@ -96,7 +97,7 @@ int MyServerSocket_select::on_accept(IOSocket_select *pSocket)
     }
     else
     {
-        file_descriptor = ::open("./not_found.html", O_RDONLY);
+        file_descriptor = ::open("./http/data/not_found.html", O_RDONLY);
         fstat(file_descriptor, &file_info);
         sprintf(file_size, "%ld", file_info.st_size);
         pSocket -> body_size = file_info.st_size;

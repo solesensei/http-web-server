@@ -1,0 +1,26 @@
+<html><body>
+Приветствую! Вот результат работы программы!
+?var b = 37.4, a = 44.4, b2 = 124, a2 = 11, c = "abc", d = "def", e = "ghk",f;
+
+write(a);
+a = a * b2 + a2 / a2 + 5;
+write(a);
+
+f = c + d + e;
+write (f);
+
+
+a = 44;
+while (a > b) {
+	write (b);
+	b = b + 1;
+}
+
+if  (e > d ) { write(e); }
+else { write (d);}
+
+if (a < b) {write (a);}
+else {write (b);}
+?
+Конец страницы
+</body></html>@
