@@ -1,15 +1,8 @@
 //Test
-function main()
+var x;
+function main(a,b)
 {
-
+    var y,z;
 }
-var x = "123";
-if (x)
-{
-
-}
-
+var y;
 @
-ajdjad
-
-ladladla
