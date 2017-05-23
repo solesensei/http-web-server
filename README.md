@@ -12,30 +12,39 @@ token analyzer
     Tokenlib.h
 
     :make token
+    ./token
 
 ### Second stage :: syntax
 syntax analyzer
 
-     smain.cpp
      syntax.cpp
      Syntaxlib.h
-
-     :make smain
-
+     
 ### Third stage :: semantics
 semantic analyzer
     
-    smain.cpp
     syntax.cpp
     semantic.cpp
     interpretlib.h
 
-    :make smain
 
 ### Forth stage :: Poliz
 
+    syntax.cpp
+    polizmain.cpp
+    execute.cpp
+    
+    :make main
+    ./js
 ---
 
 ## HTTP web server
 
-     web_server.cpp
+     tcp-ip-server.cpp
+     on_accept.cpp
+     server_socket.cpp
+     server_socket.h
+     server.cpp
+     
+     :make smain
+     ./server
