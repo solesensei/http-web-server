@@ -62,19 +62,17 @@ int MyServerSocket_select::on_accept(IOSocket_select *pSocket)
     
     if (file_descriptor >= 0)
     {
-        cerr << "here" << endl;
         content_type = get_content_type(file_name + 1);
         fstat(file_descriptor, &file_info);
-        /* if (file_info.st_mode & S_IXUSR && !S_ISDIR(file_info.st_mode))// if file is program
+        if (file_info.st_mode & S_IXUSR && !S_ISDIR(file_info.st_mode))// if file is program - executable
         {
             request_type = 3;// cgi
             pSocket -> cgihandler = new CGIHandler();
 
-            //need to add run_cgi
-            //pSocket -> cgihandler -> run_cgi(file_name + 1, args);// firts symbol '.'
+            pSocket -> cgihandler -> run_cgi(file_name, args);
             return request_type;
         }
-        */
+        
         if (content_type == 0)
         {
             ::close(file_descriptor);

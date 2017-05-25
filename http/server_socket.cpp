@@ -392,20 +392,26 @@ void MyServerSocket_select::run()
                     if (WIFEXITED(status) && (WEXITSTATUS(status) == 0))
                     {
                         int redir_fd;
+                        struct stat file_info;
                         char redir_file_name[20];
                         strcpy(redir_file_name, "temp");
                         char temp_str[20];
                         sprintf(temp_str, "%d", pid1);
                         strcat(redir_file_name, temp_str);
-                        redir_fd = open(redir_file_name, O_RDONLY);
+                        redir_fd = ::open(redir_file_name, O_RDONLY);
                         if (redir_fd < 0)
                         {
-                            perror("error with openig result file");
+                            perror("error with opening result file");
                             exit(21);
                         }
                         clients_sockets[i] -> file_descriptor = redir_fd;
-                        /*need to add make_respinse */ 
-                        //clients_sockets[i] -> cgihandler -> make_response(clients_sockets[i]);
+                        char file_size[20];
+                        fstat(redir_fd, &file_info);
+                        sprintf(file_size, "%ld", file_info.st_size);
+                        clients_sockets[i] -> body_size = file_info.st_size;
+
+                        Response answer(400, file_size, 0);
+                        clients_sockets[i] -> send_response(answer.get_buffer());
                         clients_to_send.insert(clients_sockets[i] -> get_sd());// add to send list
                     }
                     else
@@ -441,43 +447,19 @@ int MyServerSocket_select::accept()
     //IOSocket *new_socket = new IOSocket(new_socket_sd);
     return new_socket_sd;
 }
-///-------------------------------------fix this
- /*void run_cgi (char * filename, int * fd, char * args, BaseSocket * comSock) {
-        int pid;
 
-        if ( (pid = fork() ) == 0) {  //сын
-            int tempFd = ::open("temp.txt", O_CREAT|O_WRONLY|O_TRUNC , 00777);
+void CGIHandler::run_cgi (char * filename, char * args) {
+
+        if ( (pid = fork() ) == 0) {  //son
+            char redir_file_name[20];
+            strcpy(redir_file_name, "temp");
+            char temp_str[20];
+            sprintf(temp_str, "%d", getpid());
+            strcat(redir_file_name, temp_str);
+            int tempFd = ::open(redir_file_name, O_CREAT|O_WRONLY|O_TRUNC , 00777);
             dup2(tempFd, 1); 
-            strcpy (filename, "TransO"); //Home directory
-            if ( execl(filename, filename, NULL) == -1 ) printf("Oh dear, something went wrong! %s\n", strerror(errno));
+            if ( execl("js", "js", filename, NULL) == -1 ) cerr << "run_cgi : exec error\n";
             exit(1);
-            //Закрыть файл и еще что-то?!
         } 
-        else { //отец
-            int status;
-            char file_size[20];
-            struct stat file_info;
+}
 
-            waitpid (pid, &status, 0);
-
-            if(WIFEXITED(status) ){//Хорошо закончили
-                *fd = ::open ("temp.txt", O_RDONLY); 
-                if (*fd == -1) printf("Oh dear, something went wrong! %s\n", strerror(errno));
-                fstat(*fd, &file_info);
-                sprintf(file_size, "%lld", (long long int)file_info.st_size);
-                int content_type = 2;
-
-                resp = new Response(200, file_size, content_type, true, NULL);
-            }
-            else{
-                *fd = ::open ("./data/forbidden.html", O_RDONLY);
-                fstat(*fd, &file_info);
-                sprintf(file_size, "%lld", (long long int)file_info.st_size);
-                resp = new Response(403, file_size, 2, false, NULL);
-            }
-            comSock->Write ( resp->GetBuf(), strlen(resp->GetBuf()) );
-            sleep(1);
-            comSock->SendFile (*fd, file_info.st_size);
-        }
-    }
-*/

@@ -37,9 +37,8 @@ class CGIHandler
 {
 public:
     int pid;
-    /* need to add this */
+    
     void run_cgi(char *file_name, char *args);
-    void make_response(IOSocket_select *pSocket);
 };
 
 // Socket classes
