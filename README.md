@@ -38,7 +38,7 @@ semantic analyzer
     ./js
 ---
 
-## HTTP web server
+## HTTP web server [project](https://github.com/SoleSensei/http-web-server/projects/3)
 
      tcp-ip-server.cpp
      on_accept.cpp
