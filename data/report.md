@@ -1,26 +1,26 @@
-#report by sole and lazy
+# report by sole and lazy
 
-##sole (aka Dmitry Goncharenko)
-##lazy (aka Sergey Borzov)
+## sole (aka Dmitry Goncharenko)
+## lazy (aka Sergey Borzov)
 
-Количество затраченных человекочасов: 40
+Количество затраченных человекочасов: ~40
 
-Количество строк: 2825 
+Количество строк: 3728 
 
-###Лексика
+### Лексика
 
 Построенный граф
 
-###Синтаксис 
-    
-JavaScript
+### Синтаксис 
 
-###Семантика
+Построенный бнф
+
+### Семантика
    
 JavaScript
 
 
-###Тесты 
+### Тесты 
     ./tests/...
 
     fibonacci.js
