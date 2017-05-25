@@ -28,6 +28,9 @@ int main(int argc,char *argv[]){
 	catch(const char* er){
 		cout << "Semantic - not OK Line: " << par.cur_string_number << " Error: " << er << endl;
 	}
+	catch(ex_error er){
+		cout << er.err;
+	}
 	par.print_vec(par.vc_lex);
 	cout << "Poliz:\n";
 	vector<Lexem>::const_iterator t = par.Poliz.begin();

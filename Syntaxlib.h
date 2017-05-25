@@ -48,7 +48,13 @@ struct error_msg{
 		error_lex=er_l;
 	}
 };
-
+class ex_error{
+ public:
+ 	string err;
+	ex_error(string s){
+		err = s;
+	}
+};
 class Parser{
 	Lexem current_lexem;
 	Lexem cur_poliz_lexem;

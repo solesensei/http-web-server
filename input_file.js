@@ -1,8 +1,4 @@
 //Test
-var x;
-function main(a,b)
-{
-    var y,z;
-}
-var y;
+var x =3,y=2;
+alert(x/y);
 @

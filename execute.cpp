@@ -8,6 +8,7 @@
 using namespace std;
 
 
+
 void Parser::interpretation(){
 	get_lexem();
 	analyze();
@@ -561,7 +562,10 @@ void Parser::execute(){
 					}
 				}
 				if(res1.get_type() == LEX_NUM && res2.get_type() == LEX_NUM){
-					args.push(Lexem(LEX_NUM,res1.get_value()/res2.get_value()));
+					if(res2.get_value()!=0)
+						args.push(Lexem(LEX_NUM,res1.get_value()/res2.get_value()));
+					else
+						throw ex_error(string("Execution: Can't divide by zero\n"));
 				}
 				//else error
 				break;
