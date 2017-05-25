@@ -301,7 +301,7 @@ void Parser::prefix(){
 		// Here uno MINUS and PLUS 
         if (cur_type == LEX_MINUS){
 			get_lexem();
-			if (cur_type == LEX_NUM || cur_type==LEX_BOOL || cur_type==LEX_STRING){
+			if (cur_type == LEX_NUM || cur_type==LEX_BOOL || cur_type==LEX_STRING || cur_type==LEX_FALSE || cur_type==LEX_TRUE){
 				Poliz.push_back(current_lexem);
 				Poliz.push_back(LEX_UNOMINUS);
 				get_lexem();
@@ -340,7 +340,7 @@ void Parser::prefix(){
 				expression();
 				Poliz.push_back(LEX_UNOPLUS);
 			}
-			else if(cur_type==LEX_NUM || cur_type==LEX_STRING || cur_type==LEX_BOOL){
+			else if(cur_type==LEX_NUM || cur_type==LEX_STRING || cur_type==LEX_BOOL || cur_type==LEX_TRUE || cur_type==LEX_FALSE){
 				Poliz.push_back(current_lexem);
 				Poliz.push_back(Lexem(LEX_UNOPLUS));
 				get_lexem();
@@ -370,7 +370,7 @@ void Parser::prefix(){
 		}
 		return;
 	}
-	else if(cur_type==LEX_ID || cur_type == LEX_NUM || cur_type == LEX_STRING || cur_type==LEX_LPAREN){
+	else if(cur_type==LEX_ID || cur_type == LEX_NUM || cur_type == LEX_STRING || cur_type== LEX_FALSE || cur_type==LEX_TRUE || cur_type==LEX_LPAREN){
 		return;
 	}
 	else{
@@ -379,7 +379,7 @@ void Parser::prefix(){
 }
 
 void Parser::simple_expression(){
-	if(cur_type == LEX_NUM || cur_type == LEX_STRING){
+	if(cur_type == LEX_NUM || cur_type == LEX_STRING || cur_type==LEX_BOOL || cur_type==LEX_TRUE || cur_type == LEX_FALSE){
 		st_lex.push( cur_type );
 		dec ( cur_type );
 		Lexem temp = current_lexem;

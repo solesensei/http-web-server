@@ -35,6 +35,14 @@ void Parser::execute(){
 				args.push(cur_poliz_lexem);
 				break;
 			}
+			case LEX_TRUE:{
+				args.push(Lexem(LEX_NUM,1));
+				break;
+			}
+			case LEX_FALSE:{
+				args.push(Lexem(LEX_NUM,0));
+				break;
+			}
 			case LEX_NUM:{
 				args.push(cur_poliz_lexem);
 				break;
@@ -159,7 +167,7 @@ void Parser::execute(){
 
 
 				if(res1.get_type()==LEX_BOOL && res2.get_type()==LEX_BOOL){
-					args.push(Lexem(LEX_BOOL,res1.get_value() || res2.get_value()));
+					args.push(Lexem(LEX_BOOL,res1.get_value() && res2.get_value()));
 				}
 				else{
 					throw "misstake";
