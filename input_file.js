@@ -1,25 +1,17 @@
 //Test
-function sum(a,b){
-	return a+b;
-}
-
-function recursion(c){
-	if(c>0){
-		var x = sum(c,c);
-		alert(x);
-		recursion(c-1);
+function fact(c){
+	var x;
+	if(c==1 or c==0) { 
+		x = 2;
 	}
-	else{
-		alert(0);
+	else {
+		  x=fact(c-1);
+		  x=x*c;
 	}
+     return x;
 }
 
 var x;
-
-x=sum(1,3);
+x = fact(9);
 alert(x);
-x=sum("hi",x);
-alert(x);
-alert("");
-recursion(5);
 @

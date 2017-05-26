@@ -403,6 +403,7 @@ void Parser::simple_expression(){
 		}
 	}
 	else if(cur_type == LEX_ID && TID[current_lexem.get_value()].get_type()==LEX_FUNCTION){
+		TID[current_lexem.get_value()].set_is_func();
 		if(TID[current_lexem.get_value()].get_is_func()){
 			function_call();
 		}
