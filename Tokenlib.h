@@ -114,7 +114,6 @@ class Identificator{
  		is_func = false;
 
  	}
- 	stack <int> id_values;
  	char* get_name(){ return name;}
  	void set_name(const char *s){ 
  		name = new char[strlen(s)+1];

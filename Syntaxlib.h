@@ -55,6 +55,9 @@ class ex_error{
 		err = s;
 	}
 };
+
+
+
 class Parser{
 	Lexem current_lexem;
 	Lexem cur_poliz_lexem;

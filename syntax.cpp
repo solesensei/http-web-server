@@ -48,7 +48,6 @@ void Parser::function(){
 				st_loc.push( cur_value );
 				dec ( LEX_NULL );
 				count_id++;
-				TID[function_lex.get_value()].id_values.push(current_lexem.get_value());
 				get_lexem();
 				while(cur_type==LEX_COMMA){
 					get_lexem();
@@ -57,7 +56,6 @@ void Parser::function(){
 						st_loc.push( cur_value );
 						dec( LEX_NULL );
 						count_id++;
-						TID[function_lex.get_value()].id_values.push(current_lexem.get_value());
 						get_lexem();
 					}
 					else{
@@ -136,6 +134,7 @@ void Parser::function(){
 }
 
 void Parser::function_call(){
+	int func_id = current_lexem.get_value();
 	int count_id = TID[current_lexem.get_value()].get_value();
 	bool is_func = TID[current_lexem.get_value()].get_is_func();
 	int call_address = TID[current_lexem.get_value()].get_address();
@@ -167,7 +166,8 @@ void Parser::function_call(){
 		if(cur_type==LEX_RPAREN){
 			get_lexem();
 			Poliz.push_back(Lexem(POLIZ_LABEL,call_address));
-			Poliz.push_back(Lexem(POLIZ_CALL,call_num+1));
+			Poliz.push_back(Lexem(POLIZ_LABEL,func_id));
+			Poliz.push_back(Lexem(POLIZ_CALL,call_num+2));
 			if(is_func){
 				Poliz.push_back(Lexem(LEX_NUM,123));
 			}
@@ -186,7 +186,8 @@ void Parser::function_call(){
 				//cout << call_address << endl;
 				//cout << call_num << endl;
 				Poliz.push_back(Lexem(POLIZ_LABEL,call_address));
-				Poliz.push_back(Lexem(POLIZ_CALL,call_num+1));
+				Poliz.push_back(Lexem(POLIZ_LABEL,func_id));
+				Poliz.push_back(Lexem(POLIZ_CALL,call_num+2));
 				if(is_func){
 					Poliz.push_back(Lexem(LEX_NUM,123));
 				}

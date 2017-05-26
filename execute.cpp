@@ -60,8 +60,8 @@ void Parser::execute(){
 				break;
 			}
 			case LEX_ID:{
-				//cout << "hi" << endl;
 				i=cur_poliz_lexem.get_value();
+				//cout << " here " << TID[i].get_type() << " " << TID[i].get_value() << endl;
 				if(TID[i].get_type()!=LEX_FUNCTION){
 					if(TID[i].get_assign()){
 						args.push(Lexem(TID[i].get_type(),TID[i].get_value()));
@@ -952,13 +952,18 @@ void Parser::execute(){
 				break;
 			}
 			case POLIZ_CALL:{
+				int func_id=args.top().get_value();
+				args.pop();
 				int count_id=cur_poliz_lexem.get_value();
 				int old_index = index;
 				index=args.top().get_value()-2;
 				args.pop();
-				count_id--;
+				count_id=count_id-2;
 				while(count_id>0){
 					function_values.push(args.top());
+					TID[func_id+count_id].set_value(function_values.top().get_value());
+					TID[func_id+count_id].set_type(function_values.top().get_type());
+					TID[func_id+count_id].set_assign();
 					args.pop();
 					count_id--;
 				}
