@@ -410,7 +410,7 @@ void MyServerSocket_select::run()
                         sprintf(file_size, "%ld", file_info.st_size);
                         clients_sockets[i] -> body_size = file_info.st_size;
 
-                        Response answer(400, file_size, 0);
+                        Response answer(400, file_size, 1);
                         clients_sockets[i] -> send_response(answer.get_buffer());
                         clients_to_send.insert(clients_sockets[i] -> get_sd());// add to send list
                     }
